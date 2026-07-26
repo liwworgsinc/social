@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PostPilot Studio turns website information into branded social posts and editable graphics.">
+  <title>PostPilot Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand-lockup" href="#generator" data-route="generator">
+        <span class="logo-mark">P</span>
+        <span><strong>PostPilot</strong><small>Social Studio</small></span>
+      </a>
+
+      <nav class="main-nav">
+        <button class="nav-link active" data-route="generator"><span>✦</span>Generator</button>
+        <button class="nav-link" data-route="designer"><span>◫</span>Designer</button>
+        <button class="nav-link" data-route="library"><span>▤</span>Post Library <b id="postCountBadge">0</b></button>
+        <button class="nav-link" data-route="calendar"><span>◷</span>Content Queue <b id="queueCountBadge">0</b></button>
+        <button class="nav-link" data-route="brand"><span>◈</span>Brand Kit</button>
+      </nav>
+
+      <div class="sidebar-status">
+        <span class="status-dot"></span>
+        <div><strong>Supabase connected</strong><small>Secure database + storage</small></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="icon-button mobile-menu" id="mobileMenuButton" aria-label="Open menu">☰</button>
+        <div><p class="eyebrow" id="pageEyebrow">Content engine</p><h1 id="pageTitle">Generate posts</h1></div>
+        <div class="topbar-actions">
+          <span class="save-state" id="saveState">All changes saved</span>
+          <button class="account-button" id="accountButton"><span id="accountInitial">?</span><span id="accountEmail">Sign in</span></button>
+        </div>
+      </header>
+
+      <section class="route active" id="generatorRoute">
+        <div class="hero-card">
+          <div>
+            <span class="hero-pill">Website → strategy → social content</span>
+            <h2>Turn your business website into posts that look and sound professional.</h2>
+            <p>Analyze the customer problem, explain your solution, generate platform-ready captions, then turn any post into a custom graphic.</p>
+          </div>
+          <div class="hero-metrics"><div><strong>6</strong><span>design styles</span></div><div><strong>4</strong><span>platforms</span></div><div><strong>12</strong><span>posts per run</span></div></div>
+        </div>
+
+        <div class="two-panel-grid">
+          <section class="panel">
+            <div class="panel-title"><span class="step">1</span><div><h3>Website and business</h3><p>Give PostPilot enough information to understand the offer.</p></div></div>
+
+            <label for="websiteUrl">Website URL</label>
+            <input id="websiteUrl" type="url" placeholder="https://yourwebsite.com">
+            <p class="help">The server can read a public webpage, or you can paste the important text below.</p>
+
+            <label for="websiteText">Website information</label>
+            <textarea id="websiteText" rows="9" placeholder="Paste service descriptions, customer problems, benefits, offers, location and contact information..."></textarea>
+
+            <div class="field-grid">
+              <div><label for="brandName">Brand name</label><input id="brandName" placeholder="LIW Worgs Inc."></div>
+              <div><label for="audience">Target audience</label><input id="audience" placeholder="Brooklyn small business owners"></div>
+            </div>
+            <label for="callToAction">Call to action</label>
+            <input id="callToAction" placeholder="Call or message us today">
+          </section>
+
+          <section class="panel">
+            <div class="panel-title"><span class="step">2</span><div><h3>Content settings</h3><p>Choose how the posts should be written.</p></div></div>
+
+            <label>Platforms</label>
+            <div class="platform-picker" id="platformPicker">
+              <button class="platform selected" data-platform="instagram"><span class="ig">IG</span>Instagram<i>✓</i></button>
+              <button class="platform selected" data-platform="facebook"><span class="fb">f</span>Facebook<i>✓</i></button>
+              <button class="platform" data-platform="linkedin"><span class="in">in</span>LinkedIn<i>✓</i></button>
+              <button class="platform" data-platform="x"><span class="x">𝕏</span>X / Twitter<i>✓</i></button>
+            </div>
+
+            <div class="field-grid">
+              <div><label for="framework">Framework</label><select id="framework"><option value="problem-solution">Problem → Solution</option><option value="pas">Problem, Agitate, Solve</option><option value="aida">AIDA</option><option value="before-after">Before → After</option><option value="educational">Educational</option></select></div>
+              <div><label for="tone">Tone</label><select id="tone"><option value="professional">Professional</option><option value="friendly">Friendly</option><option value="bold">Bold</option><option value="luxury">Premium</option><option value="local">Local community</option></select></div>
+            </div>
+            <div class="field-grid">
+              <div><label for="generationCount">Number of posts</label><select id="generationCount"><option>4</option><option selected>6</option><option>8</option><option>10</option><option>12</option></select></div>
+              <div><label for="brandVoice">Saved brand voice</label><select id="brandVoice"><option value="professional">Professional</option><option value="friendly">Friendly</option><option value="bold">Bold</option><option value="luxury">Premium</option><option value="local">Local community</option></select></div>
+            </div>
+
+            <label class="switch-row"><span><strong>Include hashtags</strong><small>Use business and topic keywords</small></span><input id="includeHashtags" type="checkbox" checked><i></i></label>
+            <button class="primary-button wide" id="generateButton">✦ Generate better posts</button>
+            <p class="form-message" id="generatorMessage"></p>
+          </section>
+        </div>
+
+        <section class="results-section hidden" id="resultsSection">
+          <div class="section-heading"><div><p class="eyebrow">Generated content</p><h2>Review and personalize</h2></div><button class="secondary-button" id="saveAllPostsButton">Save all posts</button></div>
+          <div class="post-grid" id="generatedPosts"></div>
+        </section>
+      </section>
+
+      <section class="route" id="designerRoute">
+        <div class="section-heading"><div><p class="eyebrow">Built-in design studio</p><h2>Drag, edit and export</h2></div><div class="button-row"><button class="secondary-button" id="saveDesignButton">Save design</button><button class="primary-button" id="downloadDesignButton">Download PNG</button></div></div>
+
+        <div class="designer-shell">
+          <aside class="designer-panel tools-panel">
+            <h3>Templates</h3>
+            <div class="template-list" id="templateList"></div>
+
+            <h3>Add elements</h3>
+            <div class="tool-grid">
+              <button id="addHeadingButton">T <span>Heading</span></button>
+              <button id="addBodyButton">T <span>Body text</span></button>
+              <button id="addRectangleButton">▰ <span>Rectangle</span></button>
+              <button id="addCircleButton">● <span>Circle</span></button>
+            </div>
+            <label class="upload-button">＋ Upload image<input id="designerImageUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>
+
+            <h3>Canvas size</h3>
+            <div class="segmented" id="canvasSizePicker"><button class="active" data-size="square">Square</button><button data-size="portrait">Portrait</button><button data-size="landscape">Landscape</button><button data-size="story">Story</button></div>
+          </aside>
+
+          <div class="canvas-stage-wrap">
+            <div class="canvas-toolbar">
+              <button id="undoButton" title="Undo">↶</button><button id="redoButton" title="Redo">↷</button><span></span><button id="bringForwardButton">Bring forward</button><button id="sendBackwardButton">Send backward</button><button id="deleteObjectButton" class="danger-text">Delete</button>
+            </div>
+            <div class="canvas-stage" id="canvasStage"><canvas id="designCanvas"></canvas></div>
+            <p class="canvas-tip">Select any object to move, resize, rotate or change its properties.</p>
+          </div>
+
+          <aside class="designer-panel properties-panel">
+            <h3>Properties</h3>
+            <div id="noSelectionMessage" class="empty-mini">Select an element on the canvas.</div>
+            <div id="objectProperties" class="hidden">
+              <label for="objectText">Text</label><textarea id="objectText" rows="4"></textarea>
+              <div class="field-grid compact"><div><label for="fontFamily">Font</label><select id="fontFamily"><option>Manrope</option><option>DM Sans</option><option>Arial</option><option>Georgia</option><option>Impact</option></select></div><div><label for="fontSize">Size</label><input id="fontSize" type="number" min="8" max="180"></div></div>
+              <div class="field-grid compact"><div><label for="objectColor">Color</label><input id="objectColor" type="color"></div><div><label for="objectOpacity">Opacity</label><input id="objectOpacity" type="range" min="0.1" max="1" step="0.05"></div></div>
+              <div class="button-row"><button class="mini-button" id="boldButton"><b>B</b></button><button class="mini-button" id="alignLeftButton">≡</button><button class="mini-button" id="alignCenterButton">≡</button><button class="mini-button" id="alignRightButton">≡</button></div>
+            </div>
+
+            <h3>Layers</h3>
+            <div class="layers-list" id="layersList"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="route" id="libraryRoute">
+        <div class="section-heading"><div><p class="eyebrow">Supabase post database</p><h2>Your content library</h2></div><button class="secondary-button" id="refreshLibraryButton">Refresh</button></div>
+        <div class="post-grid" id="libraryPosts"></div>
+      </section>
+
+      <section class="route" id="calendarRoute">
+        <div class="section-heading"><div><p class="eyebrow">Approval and scheduling</p><h2>Content queue</h2></div></div>
+        <div class="queue-grid">
+          <section class="panel">
+            <h3>Schedule a saved post</h3>
+            <label for="schedulePostSelect">Post</label><select id="schedulePostSelect"></select>
+            <div class="field-grid"><div><label for="scheduleDate">Date</label><input id="scheduleDate" type="date"></div><div><label for="scheduleTime">Time</label><input id="scheduleTime" type="time" value="09:00"></div></div>
+            <button class="primary-button wide" id="scheduleButton">Add to content queue</button>
+            <p class="help">The queue is ready for future Meta, LinkedIn and X publishing connections.</p>
+          </section>
+          <section class="panel"><div class="panel-heading-inline"><h3>Upcoming posts</h3><span id="queueSummary">0 queued</span></div><div class="queue-list" id="queueList"></div></section>
+        </div>
+      </section>
+
+      <section class="route" id="brandRoute">
+        <div class="section-heading"><div><p class="eyebrow">Reusable brand settings</p><h2>Brand kit</h2></div><button class="primary-button" id="saveBrandButton">Save brand kit</button></div>
+        <div class="brand-grid">
+          <section class="panel">
+            <h3>Business identity</h3>
+            <label for="brandSettingsName">Brand name</label><input id="brandSettingsName">
+            <label for="brandSettingsWebsite">Website</label><input id="brandSettingsWebsite" type="url">
+            <label for="brandSettingsAudience">Target audience</label><input id="brandSettingsAudience">
+            <label for="brandSettingsCta">Default call to action</label><input id="brandSettingsCta">
+            <label for="brandSettingsVoice">Brand voice</label><select id="brandSettingsVoice"><option value="professional">Professional</option><option value="friendly">Friendly</option><option value="bold">Bold</option><option value="luxury">Premium</option><option value="local">Local community</option></select>
+          </section>
+          <section class="panel">
+            <h3>Visual identity</h3>
+            <div class="color-settings"><label>Primary<input id="primaryColor" type="color" value="#5b3df5"></label><label>Secondary<input id="secondaryColor" type="color" value="#171629"></label><label>Accent<input id="accentColor" type="color" value="#f3b63f"></label></div>
+            <label class="logo-dropzone">Upload logo<input id="logoUpload" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"><span id="logoPreview">No logo uploaded</span></label>
+            <p class="help">Logos and design previews are stored privately in your Supabase Storage folder.</p>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop active" id="authModal">
+    <div class="auth-card">
+      <div class="auth-brand"><span class="logo-mark">P</span><div><strong>PostPilot Studio</strong><small>Powered by Supabase</small></div></div>
+      <h2>Build better social content</h2>
+      <p>Sign in to save your brand, posts, designs and schedule.</p>
+      <form id="authForm">
+        <label for="authName" id="authNameLabel" class="hidden">Your name</label><input id="authName" class="hidden" autocomplete="name" placeholder="Your name">
+        <label for="authEmail">Email</label><input id="authEmail" type="email" required autocomplete="email" placeholder="you@example.com">
+        <label for="authPassword">Password</label><input id="authPassword" type="password" minlength="6" required autocomplete="current-password" placeholder="At least 6 characters">
+        <button class="primary-button wide" id="authSubmitButton" type="submit">Sign in</button>
+      </form>
+      <p class="form-message" id="authMessage"></p>
+      <button class="text-button" id="toggleAuthMode">Create a new account</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <template id="postCardTemplate">
+    <article class="post-card">
+      <div class="post-top"><span class="platform-badge"></span><span class="post-status"></span></div>
+      <input class="headline-input" aria-label="Post headline">
+      <textarea class="post-body-input" aria-label="Post copy"></textarea>
+      <div class="post-meta"><span class="character-count"></span><span class="framework-badge"></span></div>
+      <div class="post-actions"><button class="copy-post">Copy</button><button class="save-post">Save</button><button class="design-post primary-small">Design</button></div>
+    </article>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
