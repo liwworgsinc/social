@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#08172f">
-  <meta name="description" content="LIW Worgs Inc. internal studio for creating branded social media advertisements.">
-  <title>LIW Worgs Ad Studio</title>
+  <meta name="theme-color" content="#071a2d">
+  <meta name="description" content="LIW Worgs Inc. internal marketing studio for social posts and business outreach emails.">
+  <title>LIW Marketing Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
@@ -13,276 +13,205 @@
 </head>
 <body>
   <div class="app-shell">
-    <header class="app-header">
-      <a class="brand" href="#create" aria-label="LIW Worgs Ad Studio home">
-        <span class="brand-mark">LIW</span>
-        <span class="brand-copy"><strong>LIW WORGS INC.</strong><small>Social Advertising Studio</small></span>
-      </a>
-      <nav class="top-nav" aria-label="Studio navigation">
-        <button class="nav-button active" data-view="create"><i data-lucide="wand-sparkles"></i>Create Post</button>
-        <button class="nav-button" data-view="campaign"><i data-lucide="calendar-range"></i>7-Day Campaign</button>
-        <button class="nav-button" data-view="library"><i data-lucide="library"></i>Saved <b id="savedBadge">0</b></button>
-      </nav>
-      <div class="company-contact">
-        <span>873 Liberty Ave, Brooklyn, NY 11208</span>
-        <strong>347-423-9364</strong>
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-lockup">
+        <div class="brand-symbol">LIW</div>
+        <div><strong>WORGS INC.</strong><span>Marketing Studio</span></div>
       </div>
-      <button class="mobile-menu" id="mobileMenu" aria-label="Open menu"><i data-lucide="menu"></i></button>
-    </header>
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="post"><i data-lucide="layout-template"></i><span>Post Studio</span></button>
+        <button class="nav-item" data-view="email"><i data-lucide="mail-plus"></i><span>Email Studio</span></button>
+        <button class="nav-item" data-view="campaign"><i data-lucide="calendar-range"></i><span>Campaign Builder</span></button>
+        <button class="nav-item" data-view="library"><i data-lucide="library"></i><span>Saved Work</span><b id="savedCount">0</b></button>
+      </nav>
+      <div class="sidebar-card">
+        <span>LIW WORGS INC.</span>
+        <strong>873 Liberty Ave</strong>
+        <p>Brooklyn, NY 11208<br>347-423-9364<br>liwworgs.com</p>
+      </div>
+    </aside>
 
-    <main>
-      <section class="view active" id="createView">
-        <section class="intro-card">
-          <div>
-            <span class="intro-label"><i data-lucide="megaphone"></i> LIW internal advertising tool</span>
-            <h1>Create a professional service advertisement in minutes.</h1>
-            <p>Choose an LIW service, generate the caption and image concept, customize the design, then download the finished post.</p>
-          </div>
-          <div class="intro-steps" aria-label="Workflow">
-            <div><span>1</span><strong>Choose service</strong></div>
-            <i data-lucide="arrow-right"></i>
-            <div><span>2</span><strong>Create message</strong></div>
-            <i data-lucide="arrow-right"></i>
-            <div><span>3</span><strong>Design & export</strong></div>
-          </div>
+    <main class="main-shell">
+      <header class="topbar">
+        <button class="icon-button mobile-only" id="menuButton" aria-label="Open menu"><i data-lucide="menu"></i></button>
+        <div><p class="eyebrow">Internal LIW advertising tool</p><h1 id="pageTitle">Post Studio</h1></div>
+        <div class="topbar-actions">
+          <button class="button ghost" id="loadDemo"><i data-lucide="wand-sparkles"></i>Load demo</button>
+          <button class="button dark" id="quickSave"><i data-lucide="bookmark-plus"></i>Save</button>
+        </div>
+      </header>
+
+      <section class="view active" id="postView">
+        <section class="hero-strip">
+          <div><span class="status-pill">LIW branded</span><h2>Create better-looking service ads without starting from scratch.</h2><p>Choose the service, write the message, add a strong image, then select a polished layout built for LIW Worgs Inc.</p></div>
+          <div class="hero-metric"><strong>6</strong><span>professional layouts</span></div>
         </section>
 
-        <section class="studio-layout">
-          <aside class="setup-column">
-            <section class="panel service-panel">
-              <div class="panel-heading">
-                <div><span class="step-number">1</span><h2>Select an LIW service</h2></div>
-                <span class="selection-status" id="serviceStatus">Business Advertising</span>
-              </div>
-              <div class="service-grid" id="serviceGrid"></div>
-            </section>
-
-            <section class="panel campaign-panel">
-              <div class="panel-heading"><div><span class="step-number">2</span><h2>Post details</h2></div></div>
-
-              <label for="campaignGoal">Campaign goal</label>
-              <select id="campaignGoal">
-                <option value="awareness">Build awareness</option>
+        <div class="post-studio-grid">
+          <section class="control-stack">
+            <article class="panel">
+              <div class="panel-title"><span>01</span><div><h3>Service and message</h3><p>Start with what LIW is advertising.</p></div></div>
+              <label for="serviceSelect">LIW service</label>
+              <select id="serviceSelect"></select>
+              <label for="goalSelect">Campaign goal</label>
+              <select id="goalSelect">
                 <option value="leads">Get calls and leads</option>
-                <option value="offer">Promote a special offer</option>
+                <option value="awareness">Build awareness</option>
+                <option value="offer">Promote an offer</option>
+                <option value="trust">Build credibility</option>
                 <option value="education">Educate customers</option>
-                <option value="trust">Build trust and credibility</option>
-                <option value="urgent">Create urgency</option>
               </select>
-
-              <label for="postTopic">Main message or promotion</label>
-              <textarea id="postTopic" rows="4" placeholder="Example: We create websites, flyers, banners and social media advertising for local businesses."></textarea>
-
+              <label for="messageInput">Main message</label>
+              <textarea id="messageInput" rows="5"></textarea>
               <div class="field-grid">
-                <div>
-                  <label for="platform">Platform</label>
-                  <select id="platform">
-                    <option value="instagram">Instagram</option>
-                    <option value="facebook">Facebook</option>
-                    <option value="linkedin">LinkedIn</option>
-                    <option value="story">Instagram/Facebook Story</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="tone">Tone</label>
-                  <select id="tone">
-                    <option value="bold">Bold and direct</option>
-                    <option value="professional">Professional</option>
-                    <option value="friendly">Friendly and local</option>
-                    <option value="premium">Premium</option>
-                    <option value="urgent">Urgent</option>
-                  </select>
-                </div>
+                <div><label for="toneSelect">Tone</label><select id="toneSelect"><option value="bold">Bold</option><option value="professional">Professional</option><option value="friendly">Friendly</option><option value="premium">Premium</option></select></div>
+                <div><label for="formatSelect">Post size</label><select id="formatSelect"><option value="square">Square 1080×1080</option><option value="portrait">Portrait 1080×1350</option><option value="story">Story 1080×1920</option><option value="landscape">Landscape 1200×628</option></select></div>
               </div>
+              <button class="button primary full" id="generateCopy"><i data-lucide="sparkles"></i>Generate message package</button>
+            </article>
 
-              <label for="customCta">Call to action</label>
-              <input id="customCta" value="Call LIW Worgs Inc. today at 347-423-9364">
-
-              <button class="primary-button full" id="generatePostButton"><i data-lucide="sparkles"></i>Generate post package</button>
-              <p class="small-note">Creates three caption options, a graphic headline, and an image-generation prompt.</p>
-            </section>
-          </aside>
-
-          <section class="workspace-column">
-            <div class="workspace-tabs" role="tablist">
-              <button class="workspace-tab active" data-workspace="copy"><i data-lucide="captions"></i>Caption</button>
-              <button class="workspace-tab" data-workspace="image"><i data-lucide="image-sparkles"></i>AI Image</button>
-              <button class="workspace-tab" data-workspace="design"><i data-lucide="palette"></i>Design</button>
-            </div>
-
-            <section class="workspace-panel active" id="copyWorkspace">
-              <div class="workspace-header">
-                <div><p class="eyebrow">Step 3</p><h2>Choose and edit the caption</h2></div>
-                <button class="text-button" id="regenerateCopyButton"><i data-lucide="refresh-cw"></i>Regenerate</button>
+            <article class="panel">
+              <div class="panel-title"><span>02</span><div><h3>Image</h3><p>Generate, upload, or use a branded visual.</p></div></div>
+              <label for="imagePrompt">Image prompt</label>
+              <textarea id="imagePrompt" rows="5"></textarea>
+              <div class="image-action-grid">
+                <button class="button primary" id="generateImage"><i data-lucide="image-sparkles"></i>Generate AI image</button>
+                <label class="button ghost upload-label"><i data-lucide="upload"></i>Upload image<input id="imageUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>
+                <button class="button ghost" id="useBrandArt"><i data-lucide="shapes"></i>Use brand art</button>
+                <button class="button ghost" id="clearImage"><i data-lucide="image-off"></i>Clear</button>
               </div>
-              <div class="caption-options" id="captionOptions"></div>
-              <div class="caption-editor-card">
-                <div class="editor-heading"><strong>Final caption</strong><span id="captionCount">0 characters</span></div>
-                <textarea id="finalCaption" rows="12" placeholder="Your generated caption will appear here."></textarea>
-                <div class="editor-actions">
-                  <button class="secondary-button" id="copyCaptionButton"><i data-lucide="copy"></i>Copy caption</button>
-                  <button class="primary-button" data-next-workspace="image"><i data-lucide="arrow-right"></i>Next: create image</button>
-                </div>
-              </div>
-            </section>
+              <div class="image-thumb" id="imageThumb"><span>No image selected</span><img id="imageThumbImg" alt="Selected advertising visual"></div>
+            </article>
 
-            <section class="workspace-panel" id="imageWorkspace">
-              <div class="workspace-header">
-                <div><p class="eyebrow">Step 4</p><h2>Create the advertising image</h2></div>
-                <span class="ai-status" id="aiStatus"><i data-lucide="circle"></i>AI image API optional</span>
-              </div>
-
-              <div class="image-studio-grid">
-                <div class="image-settings">
-                  <label for="imagePrompt">Image prompt</label>
-                  <textarea id="imagePrompt" rows="8"></textarea>
-
-                  <label>Image style</label>
-                  <div class="style-picker" id="stylePicker">
-                    <button class="selected" data-style="commercial">Commercial</button>
-                    <button data-style="photorealistic">Photorealistic</button>
-                    <button data-style="local">Local Brooklyn</button>
-                    <button data-style="premium">Premium</button>
-                    <button data-style="3d">3D graphic</button>
-                    <button data-style="editorial">Editorial</button>
-                  </div>
-
-                  <div class="button-stack">
-                    <button class="primary-button full" id="generateImageButton"><i data-lucide="image-sparkles"></i>Generate AI image</button>
-                    <label class="upload-button"><i data-lucide="upload"></i>Upload your own image<input id="imageUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>
-                    <button class="secondary-button full" id="useAbstractButton"><i data-lucide="shapes"></i>Use branded graphic background</button>
-                  </div>
-                  <p class="small-note">AI generation uses a Supabase Edge Function and an OpenAI API key stored securely in Supabase—not in the website code.</p>
-                </div>
-
-                <div class="image-preview-card">
-                  <div class="image-preview" id="imagePreview">
-                    <div class="image-placeholder" id="imagePlaceholder">
-                      <i data-lucide="image-plus"></i>
-                      <strong>Your advertising image will appear here</strong>
-                      <span>Generate, upload, or use a branded background.</span>
-                    </div>
-                    <img id="generatedImage" alt="Generated advertising visual">
-                  </div>
-                  <div class="image-preview-actions">
-                    <button class="secondary-button" id="downloadRawImageButton" disabled><i data-lucide="download"></i>Download image</button>
-                    <button class="primary-button" data-next-workspace="design"><i data-lucide="arrow-right"></i>Next: design post</button>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section class="workspace-panel" id="designWorkspace">
-              <div class="workspace-header">
-                <div><p class="eyebrow">Step 5</p><h2>Finish the LIW branded design</h2></div>
-                <div class="header-actions">
-                  <button class="secondary-button" id="savePostButton"><i data-lucide="bookmark-plus"></i>Save</button>
-                  <button class="primary-button" id="downloadPostButton"><i data-lucide="download"></i>Download PNG</button>
-                </div>
-              </div>
-
-              <div class="designer-grid">
-                <aside class="design-controls">
-                  <label>Template</label>
-                  <div class="template-picker" id="templatePicker"></div>
-
-                  <label for="designHeadlineInput">Headline</label>
-                  <textarea id="designHeadlineInput" rows="3" maxlength="90"></textarea>
-
-                  <label for="designSubtextInput">Supporting text</label>
-                  <textarea id="designSubtextInput" rows="4" maxlength="180"></textarea>
-
-                  <div class="field-grid">
-                    <div><label for="headlineColor">Headline</label><input id="headlineColor" type="color" value="#ffffff"></div>
-                    <div><label for="accentColor">Accent</label><input id="accentColor" type="color" value="#f5b301"></div>
-                  </div>
-
-                  <label>Canvas size</label>
-                  <div class="size-picker" id="sizePicker">
-                    <button class="selected" data-size="square">Square</button>
-                    <button data-size="portrait">Portrait</button>
-                    <button data-size="story">Story</button>
-                    <button data-size="landscape">Landscape</button>
-                  </div>
-
-                  <label for="imageZoom">Background zoom</label>
-                  <input id="imageZoom" type="range" min="100" max="180" value="110">
-                  <label for="imagePosition">Background position</label>
-                  <input id="imagePosition" type="range" min="0" max="100" value="50">
-
-                  <div class="element-tools">
-                    <button id="addBadgeButton"><i data-lucide="badge-plus"></i>Add badge</button>
-                    <button id="addTextButton"><i data-lucide="type"></i>Add text</button>
-                    <button id="resetLayoutButton"><i data-lucide="rotate-ccw"></i>Reset</button>
-                  </div>
-                  <p class="small-note">Drag the headline, supporting text, contact bar, and extra elements directly on the design.</p>
-                </aside>
-
-                <div class="canvas-area">
-                  <div class="post-canvas size-square template-impact" id="postCanvas">
-                    <div class="canvas-background" id="canvasBackground"></div>
-                    <div class="canvas-overlay"></div>
-                    <div class="canvas-pattern"></div>
-
-                    <div class="canvas-logo draggable" data-element="logo">
-                      <span>LIW</span>
-                      <strong>WORGS INC.</strong>
-                    </div>
-
-                    <div class="canvas-service-tag draggable" id="canvasServiceTag" data-element="tag">BUSINESS ADVERTISING</div>
-
-                    <div class="canvas-copy-block draggable resizable" data-element="copy">
-                      <p class="canvas-kicker" id="canvasKicker">YOUR PROBLEM. OUR SOLUTION.</p>
-                      <h2 id="canvasHeadline">MAKE YOUR BUSINESS IMPOSSIBLE TO IGNORE.</h2>
-                      <p id="canvasSubtext">Professional advertising, graphic design and digital tools created for local businesses.</p>
-                    </div>
-
-                    <div class="canvas-contact draggable" data-element="contact">
-                      <div><span>CALL TODAY</span><strong>347-423-9364</strong></div>
-                      <div><span>VISIT</span><strong>LIWWORGS.COM</strong></div>
-                    </div>
-
-                    <div class="canvas-address">873 LIBERTY AVE • BROOKLYN, NY 11208</div>
-                    <div class="extra-elements" id="extraElements"></div>
-                  </div>
-                  <p class="canvas-instruction"><i data-lucide="move"></i>Drag elements to reposition them. Resize added elements from the corner.</p>
-                </div>
-              </div>
-            </section>
+            <article class="panel">
+              <div class="panel-title"><span>03</span><div><h3>Copy</h3><p>Fine-tune what appears on the graphic.</p></div></div>
+              <label for="headlineInput">Headline</label>
+              <textarea id="headlineInput" rows="3" maxlength="80"></textarea>
+              <label for="subtextInput">Supporting text</label>
+              <textarea id="subtextInput" rows="4" maxlength="165"></textarea>
+              <label for="ctaInput">Call to action</label>
+              <input id="ctaInput" value="CALL 347-423-9364 TODAY">
+              <details class="caption-details">
+                <summary>Social caption</summary>
+                <textarea id="captionInput" rows="10"></textarea>
+                <button class="button ghost full" id="copyCaption"><i data-lucide="copy"></i>Copy caption</button>
+              </details>
+            </article>
           </section>
+
+          <section class="designer-zone">
+            <article class="panel layout-panel">
+              <div class="panel-heading-row"><div><p class="eyebrow">Choose a layout</p><h3>Professional LIW templates</h3></div><span id="layoutName">Executive Split</span></div>
+              <div class="layout-picker" id="layoutPicker"></div>
+            </article>
+
+            <article class="canvas-panel">
+              <div class="canvas-toolbar">
+                <div><button class="icon-button" id="zoomOut" aria-label="Zoom out"><i data-lucide="minus"></i></button><span id="zoomLabel">78%</span><button class="icon-button" id="zoomIn" aria-label="Zoom in"><i data-lucide="plus"></i></button></div>
+                <div><button class="button ghost" id="downloadPost"><i data-lucide="download"></i>Download PNG</button></div>
+              </div>
+              <div class="canvas-stage">
+                <div class="post-canvas size-square layout-executive" id="postCanvas">
+                  <div class="art-layer" id="artLayer"></div>
+                  <div class="photo-layer" id="photoLayer"></div>
+                  <div class="photo-shade"></div>
+                  <div class="brand-rail"></div>
+                  <div class="logo-lockup"><span>LIW</span><strong>WORGS INC.</strong></div>
+                  <div class="service-chip" id="canvasService">BUSINESS ADVERTISING</div>
+                  <div class="copy-area">
+                    <p class="kicker" id="canvasKicker">BROOKLYN BUSINESS SOLUTIONS</p>
+                    <h2 id="canvasHeadline">MAKE YOUR BUSINESS IMPOSSIBLE TO IGNORE.</h2>
+                    <p id="canvasSubtext">Professional advertising, design and digital tools created to help local businesses stand out.</p>
+                  </div>
+                  <div class="cta-card"><span id="canvasCta">CALL 347-423-9364 TODAY</span><small>LIWWORGS.COM</small></div>
+                  <div class="address-line">873 LIBERTY AVE · BROOKLYN, NY 11208</div>
+                  <div class="decor decor-a"></div><div class="decor decor-b"></div>
+                </div>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="emailView">
+        <section class="hero-strip email-hero">
+          <div><span class="status-pill">Business outreach</span><h2>Create personalized emails LIW can send to local businesses.</h2><p>Choose an outreach goal, personalize it for one company or upload a contact list, then copy or open the finished email in your mail app.</p></div>
+          <div class="hero-metric"><strong>7</strong><span>email templates</span></div>
         </section>
+
+        <div class="email-studio-grid">
+          <section class="control-stack">
+            <article class="panel">
+              <div class="panel-title"><span>01</span><div><h3>Recipient</h3><p>Who is LIW contacting?</p></div></div>
+              <label for="businessName">Business name</label><input id="businessName" placeholder="Example: Crown Beauty Salon">
+              <label for="contactName">Contact name</label><input id="contactName" placeholder="Example: Ms. Johnson">
+              <label for="recipientEmail">Email address</label><input id="recipientEmail" type="email" placeholder="owner@example.com">
+              <label for="businessType">Business type</label>
+              <select id="businessType"><option>Small business</option><option>Daycare</option><option>Restaurant</option><option>Barber or beauty salon</option><option>Contractor</option><option>Real estate professional</option><option>Retail store</option><option>Professional office</option></select>
+              <label class="csv-upload"><i data-lucide="file-spreadsheet"></i><span><strong>Upload contact CSV</strong><small>Columns: Business Name, Contact Name, Email</small></span><input id="csvUpload" type="file" accept=".csv,text/csv"></label>
+              <div class="recipient-list" id="recipientList"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-title"><span>02</span><div><h3>Outreach strategy</h3><p>Choose the purpose and LIW service.</p></div></div>
+              <label for="emailTemplate">Email template</label>
+              <select id="emailTemplate">
+                <option value="introduction">Local business introduction</option>
+                <option value="website-audit">Website improvement opportunity</option>
+                <option value="visibility">Get more local visibility</option>
+                <option value="print">Print and branding outreach</option>
+                <option value="partnership">Referral partnership</option>
+                <option value="follow-up">Follow-up after contact</option>
+                <option value="offer">Special offer</option>
+              </select>
+              <label for="emailService">Service to promote</label><select id="emailService"></select>
+              <label for="emailOffer">Offer or reason to respond</label><input id="emailOffer" value="a free 15-minute business visibility consultation">
+              <label for="emailTone">Tone</label><select id="emailTone"><option value="professional">Professional and clear</option><option value="friendly">Friendly and local</option><option value="direct">Direct and sales-focused</option></select>
+              <button class="button primary full" id="generateEmail"><i data-lucide="mail-plus"></i>Generate email</button>
+            </article>
+          </section>
+
+          <section class="email-preview-column">
+            <article class="panel subject-panel">
+              <div class="panel-heading-row"><div><p class="eyebrow">Subject lines</p><h3>Choose one</h3></div><button class="text-button" id="refreshSubjects"><i data-lucide="refresh-cw"></i>Refresh</button></div>
+              <div class="subject-options" id="subjectOptions"></div>
+            </article>
+
+            <article class="email-preview-card">
+              <div class="email-window-bar"><span></span><span></span><span></span><strong>Email preview</strong></div>
+              <div class="email-header-preview">
+                <div><span>From</span><strong>LIW Worgs Inc. &lt;liwworgsinc@gmail.com&gt;</strong></div>
+                <div><span>To</span><strong id="previewTo">Business Owner</strong></div>
+                <div><span>Subject</span><strong id="previewSubject">A practical way to strengthen your business visibility</strong></div>
+              </div>
+              <div class="email-body-preview" id="emailBodyPreview"></div>
+              <details class="email-editor-details"><summary><i data-lucide="pencil-line"></i>Edit email body</summary><textarea id="emailBodyEditor" rows="18" aria-label="Editable email body"></textarea></details>
+              <div class="email-actions">
+                <button class="button ghost" id="copySubject"><i data-lucide="copy"></i>Copy subject</button>
+                <button class="button ghost" id="copyEmail"><i data-lucide="copy"></i>Copy email</button>
+                <button class="button ghost" id="downloadEmail"><i data-lucide="download"></i>Download HTML</button>
+                <button class="button ghost" id="openGmail"><i data-lucide="mail"></i>Open Gmail</button><button class="button primary" id="openMail"><i data-lucide="send"></i>Open email app</button>
+              </div>
+            </article>
+          </section>
+        </div>
       </section>
 
       <section class="view" id="campaignView">
-        <div class="page-heading">
-          <div><p class="eyebrow">One service, one week</p><h1>Generate a 7-day LIW campaign</h1><p>Create a complete week of different posts for the selected service.</p></div>
-          <button class="primary-button" id="generateCampaignButton"><i data-lucide="calendar-plus"></i>Create campaign</button>
-        </div>
-        <div class="campaign-summary panel">
-          <div><span>Selected service</span><strong id="campaignServiceName">Business Advertising</strong></div>
-          <div><span>Goal</span><strong id="campaignGoalName">Build awareness</strong></div>
-          <div><span>Platform</span><strong id="campaignPlatformName">Instagram</strong></div>
-        </div>
+        <section class="hero-strip"><div><span class="status-pill">Weekly planning</span><h2>Build a seven-day LIW service campaign.</h2><p>Create seven different hooks for one service, then load any idea directly into the Post Studio.</p></div><button class="button primary" id="generateCampaign"><i data-lucide="calendar-plus"></i>Generate week</button></section>
         <div class="campaign-grid" id="campaignGrid"></div>
       </section>
 
       <section class="view" id="libraryView">
-        <div class="page-heading">
-          <div><p class="eyebrow">Stored in this browser</p><h1>Saved LIW posts</h1><p>Reopen previous designs or copy their captions.</p></div>
-          <button class="secondary-button danger" id="clearLibraryButton"><i data-lucide="trash-2"></i>Clear library</button>
-        </div>
+        <section class="hero-strip"><div><span class="status-pill">Browser storage</span><h2>Saved LIW marketing work.</h2><p>Saved graphics, captions and outreach emails remain in this browser.</p></div><button class="button ghost" id="clearLibrary"><i data-lucide="trash-2"></i>Clear saved</button></section>
         <div class="library-grid" id="libraryGrid"></div>
       </section>
     </main>
   </div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
-    <div class="loading-card"><span class="spinner"></span><strong id="loadingTitle">Creating your image</strong><p id="loadingText">This may take a moment.</p></div>
-  </div>
-
+  <div class="loading-overlay" id="loadingOverlay" aria-hidden="true"><div class="loader"></div><strong id="loadingTitle">Creating image</strong><span id="loadingText">Generating a professional advertising visual.</span></div>
+  <div class="toast" id="toast" role="status"></div>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="config.js"></script>
   <script src="app.js"></script>

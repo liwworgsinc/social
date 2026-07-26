@@ -1,767 +1,231 @@
 (() => {
   "use strict";
-
   const cfg = window.LIW_STUDIO_CONFIG || {};
-  const $ = (selector, parent = document) => parent.querySelector(selector);
-  const $$ = (selector, parent = document) => [...parent.querySelectorAll(selector)];
+  const $ = (s, p = document) => p.querySelector(s);
+  const $$ = (s, p = document) => [...p.querySelectorAll(s)];
 
   const SERVICES = [
-    {
-      id: "advertising",
-      name: "Business Advertising",
-      short: "Ads & promotion",
-      icon: "megaphone",
-      audience: "local businesses that need more attention and customers",
-      problem: "Many good businesses stay invisible because their message is unclear, inconsistent, or not reaching the right people.",
-      solution: "LIW Worgs Inc. creates coordinated advertising across social media, websites, print, radio, television, and digital business tools.",
-      defaultTopic: "We help local businesses get noticed with social media content, websites, print advertising, digital business cards, radio and television promotion.",
-      benefits: ["Stronger visibility", "Professional brand image", "More ways for customers to find you"],
-      visuals: "a confident Black small-business owner reviewing professional advertising materials and social media content in a modern Brooklyn office",
-      hashtags: ["LIWWorgs", "BrooklynBusiness", "SmallBusinessMarketing", "BusinessAdvertising", "GetNoticed"],
-      headlines: ["MAKE YOUR BUSINESS IMPOSSIBLE TO IGNORE.", "GOOD BUSINESS DESERVES GREAT ADVERTISING.", "GET SEEN. GET REMEMBERED. GET CUSTOMERS."]
-    },
-    {
-      id: "web-design",
-      name: "Web & Digital Solutions",
-      short: "Websites & NFC",
-      icon: "monitor-smartphone",
-      audience: "business owners who need a professional online presence",
-      problem: "An outdated, confusing, or missing website can make a legitimate business look unprepared and cost it valuable leads.",
-      solution: "LIW Worgs Inc. builds mobile-friendly websites, landing pages, forms, digital business cards, NFC tools, and online customer experiences.",
-      defaultTopic: "We build professional mobile-friendly websites and digital tools that help customers understand, trust, and contact your business.",
-      benefits: ["Mobile-friendly design", "Better customer experience", "Clear calls to action"],
-      visuals: "a professional Black web designer presenting a polished business website on a desktop monitor and smartphone, modern office, Brooklyn entrepreneur",
-      hashtags: ["LIWWorgs", "WebDesign", "BrooklynWebDesigner", "DigitalBusiness", "SmallBusinessWebsite"],
-      headlines: ["YOUR WEBSITE SHOULD WORK AS HARD AS YOU DO.", "TURN CLICKS INTO REAL CUSTOMERS.", "BUILD A DIGITAL PRESENCE PEOPLE TRUST."]
-    },
-    {
-      id: "print",
-      name: "Print & Graphic Design",
-      short: "Flyers, banners & logos",
-      icon: "printer",
-      audience: "businesses, events, organizations, and professionals that need polished printed materials",
-      problem: "Poor-quality graphics and inconsistent print materials can make a strong offer look unprofessional.",
-      solution: "LIW Worgs Inc. designs logos, flyers, banners, signs, business cards, menus, labels, and other print-ready marketing materials.",
-      defaultTopic: "From logos and flyers to banners and business cards, we create professional print designs that make your business stand out.",
-      benefits: ["Print-ready artwork", "Consistent branding", "Professional presentation"],
-      visuals: "a stylish display of premium flyers, business cards, banners and branded print materials on a design studio table, Black-owned business branding",
-      hashtags: ["LIWWorgs", "GraphicDesign", "BrooklynPrinting", "FlyerDesign", "BusinessBranding"],
-      headlines: ["PRINT MATERIALS THAT DEMAND ATTENTION.", "YOUR BRAND SHOULD LOOK PROFESSIONAL EVERYWHERE.", "FROM IDEA TO PRINT-READY DESIGN."]
-    },
-    {
-      id: "real-estate",
-      name: "Real Estate Services",
-      short: "Sales & rentals",
-      icon: "house-key",
-      audience: "buyers, sellers, renters, landlords, and property owners in New York",
-      problem: "Finding the right property or qualified customer can be stressful when information, communication, and follow-up are scattered.",
-      solution: "LIW Worgs Inc. supports residential and commercial sales, rentals, property marketing, and customer guidance from inquiry through the next step.",
-      defaultTopic: "Looking to buy, sell, or rent in New York? LIW Worgs Inc. helps you understand your options and move forward confidently.",
-      benefits: ["Local market guidance", "Property promotion", "Responsive communication"],
-      visuals: "a professional Black real estate advisor standing outside a beautiful Brooklyn brownstone with a confident client, warm daylight, authentic New York neighborhood",
-      hashtags: ["LIWWorgs", "BrooklynRealEstate", "NYCRentals", "HomeBuyers", "PropertyForSale"],
-      headlines: ["YOUR NEXT MOVE STARTS WITH THE RIGHT GUIDANCE.", "BUY. SELL. RENT. MOVE FORWARD.", "REAL ESTATE SUPPORT BUILT AROUND YOU."]
-    },
-    {
-      id: "property-management",
-      name: "Property Management",
-      short: "Reliable property support",
-      icon: "building-2",
-      audience: "landlords and property owners who want dependable day-to-day support",
-      problem: "Maintenance coordination, tenant communication, inspections, and recurring property tasks can consume an owner’s time and energy.",
-      solution: "LIW Worgs Inc. provides practical property-management support designed to protect the property, improve communication, and reduce owner stress.",
-      defaultTopic: "Spend less time chasing property problems. LIW Worgs Inc. helps owners coordinate maintenance, communication, inspections, and recurring property needs.",
-      benefits: ["Less owner stress", "Organized communication", "Dependable coordination"],
-      visuals: "a professional Black property manager inspecting a clean Brooklyn apartment building with tablet and keys, trustworthy and organized",
-      hashtags: ["LIWWorgs", "PropertyManagement", "BrooklynLandlord", "RentalProperty", "PropertyCare"],
-      headlines: ["OWN THE PROPERTY—NOT THE DAILY STRESS.", "DEPENDABLE SUPPORT FOR YOUR PROPERTY.", "PROTECT YOUR PROPERTY. SAVE YOUR TIME."]
-    },
-    {
-      id: "taxes",
-      name: "Income Tax Services",
-      short: "Personal & business taxes",
-      icon: "receipt-text",
-      audience: "individuals, families, and small-business owners who need organized tax help",
-      problem: "Tax paperwork, missed documents, and uncertainty about filing can create stress and expensive mistakes.",
-      solution: "LIW Worgs Inc. helps customers organize information, understand the process, and prepare personal or business tax filings accurately.",
-      defaultTopic: "Tax time does not have to feel overwhelming. Get organized, understand what you need, and file with professional support from LIW Worgs Inc.",
-      benefits: ["Clear guidance", "Organized preparation", "Personal and business support"],
-      visuals: "a professional Black tax preparer helping a client review organized financial documents in a welcoming Brooklyn office, calm and trustworthy",
-      hashtags: ["LIWWorgs", "TaxPreparation", "BrooklynTaxes", "SmallBusinessTaxes", "TaxHelp"],
-      headlines: ["TAX TIME WITHOUT THE CONFUSION.", "GET ORGANIZED. GET PREPARED. GET FILED.", "PROFESSIONAL TAX SUPPORT STARTS HERE."]
-    },
-    {
-      id: "credit",
-      name: "Credit Solutions",
-      short: "Credit education & disputes",
-      icon: "chart-no-axes-combined",
-      audience: "people who want to better understand and improve their credit profile",
-      problem: "Errors, outdated information, high balances, and a lack of strategy can make credit improvement feel confusing and discouraging.",
-      solution: "LIW Worgs Inc. provides credit analysis, education, dispute support, progress tracking, and a practical plan for stronger financial habits.",
-      defaultTopic: "Your credit report should tell the correct story. LIW Worgs Inc. helps you review, understand, and address questionable information while building better habits.",
-      benefits: ["Credit-report review", "Dispute support", "Education and progress tracking"],
-      visuals: "a confident Black financial consultant explaining a credit improvement plan to a client using a tablet, professional office, hopeful and empowering",
-      hashtags: ["LIWWorgs", "CreditEducation", "CreditRepair", "FinancialGoals", "BetterCredit"],
-      headlines: ["YOUR CREDIT STORY CAN CHANGE.", "UNDERSTAND IT. ADDRESS IT. IMPROVE IT.", "A STRONGER CREDIT PLAN STARTS TODAY."]
-    },
-    {
-      id: "business-loans",
-      name: "Business Funding",
-      short: "Loan & funding guidance",
-      icon: "landmark",
-      audience: "entrepreneurs and established businesses exploring funding options",
-      problem: "Business owners often need capital but are unsure which funding options fit their goals, qualifications, and repayment ability.",
-      solution: "LIW Worgs Inc. helps business owners organize their information, explore possible funding paths, and prepare for conversations with financing providers.",
-      defaultTopic: "Need capital to grow, purchase equipment, or manage cash flow? Start by understanding your business-funding options with LIW Worgs Inc.",
-      benefits: ["Funding-option guidance", "Document preparation", "Clear next steps"],
-      visuals: "a Black entrepreneur and professional business advisor reviewing a growth and funding plan in a modern office, ambitious small business setting",
-      hashtags: ["LIWWorgs", "BusinessFunding", "SmallBusinessLoans", "EntrepreneurSupport", "BusinessGrowth"],
-      headlines: ["FUND YOUR NEXT BUSINESS MOVE.", "GROWTH NEEDS A PLAN—AND THE RIGHT CAPITAL.", "EXPLORE FUNDING WITH CLARITY."]
-    },
-    {
-      id: "eyeglasses",
-      name: "Eyeglasses Repair",
-      short: "Just Eyes mobile service",
-      icon: "glasses",
-      audience: "people who need convenient eyewear repair, adjustment, or frame support",
-      problem: "Loose, bent, or damaged glasses are uncomfortable and can disrupt work, driving, reading, and everyday life.",
-      solution: "LIW Worgs Inc. and Just Eyes provide practical eyeglasses repair, adjustments, frame support, and convenient service options.",
-      defaultTopic: "Do not struggle with uncomfortable or damaged eyewear. Ask about eyeglasses repair, adjustments, frames, and convenient service from Just Eyes.",
-      benefits: ["Convenient repair", "Professional adjustment", "Frame and eyewear support"],
-      visuals: "a skilled Black optical professional carefully adjusting eyeglasses with precision tools at a clean eyewear repair station, clear focus on the glasses",
-      hashtags: ["JustEyes", "LIWWorgs", "EyeglassesRepair", "BrooklynOptical", "GlassesAdjustment"],
-      headlines: ["BROKEN OR UNCOMFORTABLE GLASSES? LET’S FIX THAT.", "SEE BETTER. FEEL BETTER. WEAR THEM COMFORTABLY.", "PROFESSIONAL EYEGLASS REPAIR MADE CONVENIENT."]
-    }
+    {id:"advertising",name:"Business Advertising",kicker:"BROOKLYN BUSINESS SOLUTIONS",message:"We help local businesses get noticed with social media content, websites, print advertising, digital business cards, radio and television promotion.",problem:"Too many good businesses are invisible because their message is weak or inconsistent.",solution:"LIW Worgs Inc. creates coordinated advertising that helps your business get seen, remembered and contacted.",audience:"local business owners",visual:"a confident Black small-business owner reviewing polished advertising materials in a modern Brooklyn office",headlines:["MAKE YOUR BUSINESS IMPOSSIBLE TO IGNORE.","GOOD BUSINESS DESERVES GREAT ADVERTISING.","GET SEEN. GET REMEMBERED. GET CUSTOMERS."],hashtags:["#LIWWorgs","#BrooklynBusiness","#BusinessAdvertising","#SmallBusinessMarketing"]},
+    {id:"web",name:"Web & Digital Solutions",kicker:"WEBSITES THAT WORK",message:"We build professional mobile-friendly websites, landing pages, digital business cards, forms and NFC tools for small businesses.",problem:"An outdated or missing website can make a legitimate business look unprepared and cost valuable leads.",solution:"LIW builds clear, mobile-friendly digital experiences that help customers trust and contact your business.",audience:"business owners who need a stronger online presence",visual:"a professional Black web designer presenting a polished business website on a desktop monitor and smartphone",headlines:["YOUR WEBSITE SHOULD WORK AS HARD AS YOU DO.","TURN CLICKS INTO REAL CUSTOMERS.","BUILD A DIGITAL PRESENCE PEOPLE TRUST."],hashtags:["#LIWWorgs","#WebDesign","#BrooklynWebDesigner","#DigitalBusiness"]},
+    {id:"print",name:"Print & Graphic Design",kicker:"DESIGN THAT GETS NOTICED",message:"From logos and flyers to banners, signs and business cards, we create professional print-ready designs.",problem:"Weak graphics can make a strong business or offer look unprofessional.",solution:"LIW creates polished, consistent visuals that make your brand look ready for business everywhere.",audience:"businesses and organizations that need professional marketing materials",visual:"premium flyers, business cards, banners and branded print materials arranged in a modern design studio",headlines:["PRINT MATERIALS THAT DEMAND ATTENTION.","YOUR BRAND SHOULD LOOK PROFESSIONAL EVERYWHERE.","FROM IDEA TO PRINT-READY DESIGN."],hashtags:["#LIWWorgs","#GraphicDesign","#BrooklynPrinting","#BusinessBranding"]},
+    {id:"realestate",name:"Real Estate Services",kicker:"NEW YORK REAL ESTATE SUPPORT",message:"Looking to buy, sell or rent? LIW Worgs Inc. helps you understand your options and move forward confidently.",problem:"Property searches and transactions become stressful when communication and information are scattered.",solution:"LIW provides local guidance, property promotion and responsive support from inquiry through the next step.",audience:"buyers, sellers, renters and landlords",visual:"a professional Black real estate advisor outside a beautiful Brooklyn brownstone with a confident client",headlines:["YOUR NEXT MOVE STARTS WITH THE RIGHT GUIDANCE.","BUY. SELL. RENT. MOVE FORWARD.","REAL ESTATE SUPPORT BUILT AROUND YOU."],hashtags:["#LIWWorgs","#BrooklynRealEstate","#NYCRentals","#HomeSearch"]},
+    {id:"property",name:"Property Management",kicker:"DEPENDABLE PROPERTY SUPPORT",message:"LIW helps property owners coordinate maintenance, inspections, communication and recurring property needs.",problem:"Daily property issues can consume an owner’s time and create unnecessary stress.",solution:"LIW provides organized, dependable support designed to protect the property and reduce owner workload.",audience:"landlords and property owners",visual:"a professional Black property manager inspecting a clean Brooklyn apartment building with tablet and keys",headlines:["OWN THE PROPERTY—NOT THE DAILY STRESS.","DEPENDABLE SUPPORT FOR YOUR PROPERTY.","PROTECT YOUR PROPERTY. SAVE YOUR TIME."],hashtags:["#LIWWorgs","#PropertyManagement","#BrooklynLandlord","#PropertyCare"]},
+    {id:"tax",name:"Income Tax Services",kicker:"PERSONAL & BUSINESS TAX SUPPORT",message:"Get organized, understand what you need and prepare your personal or business tax filing with professional support.",problem:"Tax paperwork and missed documents can create stress, delays and costly mistakes.",solution:"LIW helps customers organize information and approach tax preparation with greater clarity.",audience:"individuals, families and business owners",visual:"a professional Black tax preparer helping a client review organized financial documents in a welcoming office",headlines:["TAX TIME WITHOUT THE CONFUSION.","GET ORGANIZED. GET PREPARED. GET FILED.","PROFESSIONAL TAX SUPPORT STARTS HERE."],hashtags:["#LIWWorgs","#TaxPreparation","#BrooklynTaxes","#SmallBusinessTaxes"]},
+    {id:"credit",name:"Credit Solutions",kicker:"A CLEARER CREDIT PLAN",message:"Review your credit report, understand questionable information and build practical financial habits with LIW support.",problem:"Errors, outdated information and a lack of strategy can make credit improvement feel discouraging.",solution:"LIW offers credit analysis, education, dispute support and progress tracking.",audience:"people working toward stronger credit",visual:"a confident Black financial consultant explaining a credit improvement plan to a client using a tablet",headlines:["YOUR CREDIT STORY CAN CHANGE.","UNDERSTAND IT. ADDRESS IT. IMPROVE IT.","A STRONGER CREDIT PLAN STARTS TODAY."],hashtags:["#LIWWorgs","#CreditEducation","#CreditSolutions","#FinancialGoals"]},
+    {id:"funding",name:"Business Funding",kicker:"FUND YOUR NEXT MOVE",message:"Understand possible funding paths, organize your business information and prepare for financing conversations.",problem:"Business owners often need capital but do not know which options fit their goals and qualifications.",solution:"LIW helps entrepreneurs explore funding possibilities with clearer information and next steps.",audience:"entrepreneurs and growing businesses",visual:"a Black entrepreneur and professional advisor reviewing a business growth and funding plan in a modern office",headlines:["FUND YOUR NEXT BUSINESS MOVE.","GROWTH NEEDS A PLAN—AND THE RIGHT CAPITAL.","EXPLORE FUNDING WITH CLARITY."],hashtags:["#LIWWorgs","#BusinessFunding","#EntrepreneurSupport","#BusinessGrowth"]},
+    {id:"eyeglasses",name:"Eyeglasses Repair",kicker:"JUST EYES MOBILE SERVICE",message:"Convenient eyewear repair, adjustment and frame support from LIW Worgs Inc. and Just Eyes.",problem:"Broken or poorly fitting eyewear can interrupt your day and be difficult to repair quickly.",solution:"LIW provides convenient eyeglasses repair and adjustment support with practical service options.",audience:"people who need fast, convenient eyewear help",visual:"a skilled Black optical professional carefully repairing and adjusting eyeglasses at a clean workbench",headlines:["BROKEN GLASSES? LET’S FIX THAT.","SEE CLEARLY. WEAR COMFORTABLY.","CONVENIENT EYEWEAR REPAIR STARTS HERE."],hashtags:["#LIWWorgs","#JustEyes","#EyeglassesRepair","#BrooklynOptical"]}
   ];
 
-  const GOALS = {
-    awareness: { label: "Build awareness", hook: "People cannot choose a service they do not know exists.", ending: "Save this post and share it with someone who may need this service." },
-    leads: { label: "Get calls and leads", hook: "Ready to stop searching and speak with someone who can help?", ending: "Call now to discuss what you need and the next step." },
-    offer: { label: "Promote a special offer", hook: "A better time to take action may be right now.", ending: "Ask about current pricing, availability, or promotional options." },
-    education: { label: "Educate customers", hook: "Knowing what to look for can save time, money, and frustration.", ending: "Follow LIW Worgs Inc. for more practical business and service information." },
-    trust: { label: "Build trust and credibility", hook: "The right provider should explain the process and treat your goals seriously.", ending: "Choose local support that values clear communication and professional service." },
-    urgent: { label: "Create urgency", hook: "Waiting can allow a small problem to become more expensive or harder to solve.", ending: "Contact LIW Worgs Inc. today instead of putting it off again." }
-  };
+  const LAYOUTS = [
+    {id:"executive",name:"Executive Split"},{id:"poster",name:"Bold Poster"},{id:"editorial",name:"Editorial"},{id:"local",name:"Local Business"},{id:"premium",name:"Premium"},{id:"offer",name:"Offer Blast"}
+  ];
 
-  const TONES = {
-    bold: { label: "Bold", opener: "STOP SETTLING FOR A WEAK SOLUTION.", adjective: "direct, confident, energetic" },
-    professional: { label: "Professional", opener: "Professional support can make the next step clearer.", adjective: "professional, polished, trustworthy" },
-    friendly: { label: "Friendly", opener: "Let’s make this easier for you.", adjective: "warm, welcoming, authentic" },
-    premium: { label: "Premium", opener: "Your goals deserve a more polished experience.", adjective: "premium, sophisticated, refined" },
-    urgent: { label: "Urgent", opener: "Do not wait until the problem gets worse.", adjective: "urgent, high-impact, action-oriented" }
-  };
-
-  const PLATFORMS = {
-    instagram: { label: "Instagram", size: "square" },
-    facebook: { label: "Facebook", size: "landscape" },
-    linkedin: { label: "LinkedIn", size: "landscape" },
-    story: { label: "Story", size: "story" }
-  };
-
-  const TEMPLATES = ["impact", "split", "glass", "light", "offer", "local", "editorial", "blueprint"];
   const state = {
-    service: SERVICES[0],
-    captions: [],
-    selectedCaption: 0,
-    imageUrl: "",
-    imagePrompt: "",
-    imageStyle: "commercial",
-    template: "impact",
-    canvasSize: "square",
-    saved: loadSaved(),
-    campaign: []
+    service: SERVICES[0], layout:"executive", format:"square", image:null, zoom:.90,
+    subjects:[], selectedSubject:"", recipients:[], saved:loadJSON("liw_marketing_saved",[]), currentEmail:""
   };
 
-  function loadSaved() {
-    try { return JSON.parse(localStorage.getItem("liw_ad_studio_saved") || "[]"); }
-    catch { return []; }
+  const goalHooks = {
+    leads:["Ready to get more calls and qualified leads?","Your next customer may already be looking for you.","Make it easier for customers to choose your business."],
+    awareness:["People cannot choose a business they never notice.","Strong visibility starts with a clear message.","Let more people know what your business can do."],
+    offer:["A better way to move forward is available now.","This is the right time to take the next step.","Do not miss the opportunity to improve your results."],
+    trust:["Professional presentation builds professional trust.","Customers notice how a business communicates.","Credibility starts before the first conversation."],
+    education:["Here is what more customers should know.","The right information can prevent expensive mistakes.","Understanding the process makes the next step easier."]
+  };
+
+  function loadJSON(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
+  function saveJSON(){localStorage.setItem("liw_marketing_saved",JSON.stringify(state.saved))}
+  function esc(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+  function clean(v=""){return String(v).replace(/\s+/g," ").trim()}
+  function showToast(message){const t=$("#toast");t.textContent=message;t.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove("show"),2400)}
+  function setLoading(show,title="Working",text="Please wait."){const o=$("#loadingOverlay");o.classList.toggle("show",show);o.setAttribute("aria-hidden",String(!show));$("#loadingTitle").textContent=title;$("#loadingText").textContent=text}
+  function copy(text){navigator.clipboard?.writeText(text).then(()=>showToast("Copied to clipboard.")).catch(()=>{const a=document.createElement("textarea");a.value=text;document.body.append(a);a.select();document.execCommand("copy");a.remove();showToast("Copied to clipboard.")})}
+  function download(content,name,type="text/plain"){const blob=new Blob([content],{type});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+
+  function initialize(){
+    populateServices();renderLayouts();bind();applyService(true);generateEmail();renderCampaign();renderLibrary();updateSavedCount();setZoom();lucide.createIcons();
   }
 
-  function persistSaved() {
-    localStorage.setItem("liw_ad_studio_saved", JSON.stringify(state.saved.slice(0, 15)));
-    $("#savedBadge").textContent = state.saved.length;
+  function populateServices(){
+    const options=SERVICES.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("");
+    $("#serviceSelect").innerHTML=options;$("#emailService").innerHTML=options;
   }
 
-  function escapeHtml(value = "") {
-    return String(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+  function renderLayouts(){
+    $("#layoutPicker").innerHTML=LAYOUTS.map(l=>`<button class="layout-card ${l.id===state.layout?"active":""}" data-layout="${l.id}"><span class="layout-mini ${l.id}"></span><strong>${l.name}</strong></button>`).join("");
+    $$(".layout-card").forEach(b=>b.addEventListener("click",()=>{state.layout=b.dataset.layout;applyLayout()}));
   }
 
-  function showToast(message) {
-    const toast = $("#toast");
-    toast.textContent = message;
-    toast.classList.add("show");
-    clearTimeout(showToast.timer);
-    showToast.timer = setTimeout(() => toast.classList.remove("show"), 2800);
+  function bind(){
+    $$(".nav-item").forEach(b=>b.addEventListener("click",()=>switchView(b.dataset.view)));
+    $("#menuButton").addEventListener("click",()=>$("#sidebar").classList.toggle("open"));
+    $("#serviceSelect").addEventListener("change",e=>{state.service=SERVICES.find(s=>s.id===e.target.value)||SERVICES[0];applyService(true)});
+    $("#goalSelect").addEventListener("change",generateCopy);
+    $("#toneSelect").addEventListener("change",generateCopy);
+    $("#formatSelect").addEventListener("change",e=>{state.format=e.target.value;applyFormat()});
+    $("#generateCopy").addEventListener("click",generateCopy);
+    ["headlineInput","subtextInput","ctaInput"].forEach(id=>$("#"+id).addEventListener("input",updateCanvasCopy));
+    $("#copyCaption").addEventListener("click",()=>copy($("#captionInput").value));
+    $("#imageUpload").addEventListener("change",uploadImage);
+    $("#generateImage").addEventListener("click",generateImage);
+    $("#useBrandArt").addEventListener("click",useBrandArt);
+    $("#clearImage").addEventListener("click",()=>setImage(null));
+    $("#zoomIn").addEventListener("click",()=>{state.zoom=Math.min(1.08,state.zoom+.08);setZoom()});
+    $("#zoomOut").addEventListener("click",()=>{state.zoom=Math.max(.45,state.zoom-.08);setZoom()});
+    $("#downloadPost").addEventListener("click",downloadPost);
+    $("#loadDemo").addEventListener("click",()=>{state.service=SERVICES[0];$("#serviceSelect").value="advertising";applyService(true);useBrandArt();showToast("LIW advertising demo loaded.")});
+    $("#quickSave").addEventListener("click",quickSave);
+
+    $("#emailService").addEventListener("change",generateEmail);
+    ["businessName","contactName","recipientEmail","businessType","emailTemplate","emailOffer","emailTone"].forEach(id=>$("#"+id).addEventListener("input",generateEmail));
+    $("#generateEmail").addEventListener("click",generateEmail);
+    $("#refreshSubjects").addEventListener("click",generateEmail);
+    $("#emailBodyEditor").addEventListener("input",e=>{state.currentEmail=e.target.value;renderEmailPreview()});
+    $("#copySubject").addEventListener("click",()=>copy(state.selectedSubject));
+    $("#copyEmail").addEventListener("click",()=>copy($("#emailBodyEditor").value));
+    $("#downloadEmail").addEventListener("click",downloadEmailHtml);
+    $("#openMail").addEventListener("click",openMail);
+    $("#openGmail").addEventListener("click",openGmail);
+    $("#csvUpload").addEventListener("change",readCSV);
+
+    $("#generateCampaign").addEventListener("click",renderCampaign);
+    $("#clearLibrary").addEventListener("click",()=>{state.saved=[];saveJSON();renderLibrary();updateSavedCount();showToast("Saved work cleared.")});
   }
 
-  function setLoading(active, title = "Creating your image", text = "This may take a moment.") {
-    $("#loadingOverlay").classList.toggle("active", active);
-    $("#loadingOverlay").setAttribute("aria-hidden", String(!active));
-    $("#loadingTitle").textContent = title;
-    $("#loadingText").textContent = text;
+  function switchView(view){
+    $$(".view").forEach(v=>v.classList.remove("active"));$("#"+view+"View")?.classList.add("active");
+    $$(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+    const titles={post:"Post Studio",email:"Email Studio",campaign:"Campaign Builder",library:"Saved Work"};$("#pageTitle").textContent=titles[view];$("#sidebar").classList.remove("open");window.scrollTo({top:0,behavior:"smooth"});
   }
 
-  function switchView(viewName) {
-    $$(".view").forEach(view => view.classList.toggle("active", view.id === `${viewName}View`));
-    $$(".nav-button").forEach(button => button.classList.toggle("active", button.dataset.view === viewName));
-    $(".top-nav")?.classList.remove("open");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  function applyService(resetCopy=false){
+    $("#messageInput").value=state.service.message;$("#imagePrompt").value=makeImagePrompt();
+    if(resetCopy)generateCopy();
   }
 
-  function switchWorkspace(name) {
-    $$(".workspace-tab").forEach(button => button.classList.toggle("active", button.dataset.workspace === name));
-    $$(".workspace-panel").forEach(panel => panel.classList.toggle("active", panel.id === `${name}Workspace`));
-    if (name === "design") syncDesignFromCurrent();
+  function generateCopy(){
+    const s=state.service;const goal=$("#goalSelect").value;const tone=$("#toneSelect").value;const custom=clean($("#messageInput").value)||s.message;
+    const hook=goalHooks[goal][Math.floor(Math.random()*goalHooks[goal].length)];
+    const headline=s.headlines[Math.floor(Math.random()*s.headlines.length)];
+    const toneLine={bold:"Stop settling for weak results.",professional:"A clear, professional solution makes the next step easier.",friendly:"Let’s make this simpler for you.",premium:"Your business deserves a more polished experience."}[tone];
+    const caption=`${hook}\n\n${toneLine}\n\nTHE PROBLEM\n${s.problem}\n\nTHE LIW SOLUTION\n${s.solution}\n\n${custom}\n\nCall LIW Worgs Inc. at 347-423-9364 or visit liwworgs.com.\n\n${s.hashtags.join(" ")}`;
+    $("#headlineInput").value=headline;$("#subtextInput").value=custom;$("#captionInput").value=caption;$("#imagePrompt").value=makeImagePrompt();updateCanvasCopy();showToast("Message package created.");
   }
 
-  function renderServices() {
-    const grid = $("#serviceGrid");
-    grid.innerHTML = SERVICES.map(service => `
-      <button class="service-card${service.id === state.service.id ? " selected" : ""}" data-service="${service.id}">
-        <span class="service-icon"><i data-lucide="${service.icon}"></i></span>
-        <strong>${escapeHtml(service.name)}</strong>
-        <small>${escapeHtml(service.short)}</small>
-        <i>✓</i>
-      </button>
-    `).join("");
-    $$(".service-card", grid).forEach(button => button.addEventListener("click", () => selectService(button.dataset.service)));
-    lucide.createIcons();
+  function updateCanvasCopy(){
+    $("#canvasService").textContent=state.service.name.toUpperCase();$("#canvasKicker").textContent=state.service.kicker;$("#canvasHeadline").textContent=$("#headlineInput").value||state.service.headlines[0];$("#canvasSubtext").textContent=$("#subtextInput").value||state.service.message;$("#canvasCta").textContent=$("#ctaInput").value||"CALL 347-423-9364 TODAY";
   }
 
-  function selectService(serviceId) {
-    state.service = SERVICES.find(service => service.id === serviceId) || SERVICES[0];
-    renderServices();
-    $("#serviceStatus").textContent = state.service.name;
-    $("#postTopic").value = state.service.defaultTopic;
-    $("#canvasServiceTag").textContent = state.service.name.toUpperCase();
-    $("#campaignServiceName").textContent = state.service.name;
-    updateCampaignSummary();
-    generatePostPackage();
+  function applyLayout(){
+    const c=$("#postCanvas");LAYOUTS.forEach(l=>c.classList.remove("layout-"+l.id));c.classList.add("layout-"+state.layout);$$(".layout-card").forEach(b=>b.classList.toggle("active",b.dataset.layout===state.layout));$("#layoutName").textContent=LAYOUTS.find(l=>l.id===state.layout)?.name||"Layout";
   }
 
-  function currentSettings() {
-    return {
-      goal: GOALS[$("#campaignGoal").value] || GOALS.awareness,
-      goalId: $("#campaignGoal").value,
-      tone: TONES[$("#tone").value] || TONES.bold,
-      toneId: $("#tone").value,
-      platform: PLATFORMS[$("#platform").value] || PLATFORMS.instagram,
-      platformId: $("#platform").value,
-      topic: $("#postTopic").value.trim() || state.service.defaultTopic,
-      cta: $("#customCta").value.trim() || "Call LIW Worgs Inc. today at 347-423-9364"
-    };
+  function applyFormat(){
+    const c=$("#postCanvas");["square","portrait","story","landscape"].forEach(f=>c.classList.remove("size-"+f));c.classList.add("size-"+state.format);setZoom();
+  }
+  function setZoom(){const c=$("#postCanvas");c.style.transform=`scale(${state.zoom})`;$("#zoomLabel").textContent=Math.round(state.zoom*100)+"%"}
+
+  function makeImagePrompt(){
+    const s=state.service;const format=$("#formatSelect").value||"square";
+    return `Create a premium commercial advertising photograph for LIW Worgs Inc. showing ${s.visual}. Authentic Brooklyn/New York atmosphere, professional Black-owned business representation, clean realistic lighting, confident and trustworthy mood, enough negative space for headline text, no words, no letters, no logos, no watermarks. Composition optimized for a ${format} social media advertisement.`;
   }
 
-  function makeHashtags(service, platformId) {
-    if (platformId === "linkedin") return service.hashtags.slice(0, 4).map(tag => `#${tag}`).join(" ");
-    return service.hashtags.map(tag => `#${tag}`).join(" ");
+  async function generateImage(){
+    const prompt=clean($("#imagePrompt").value);if(prompt.length<30)return showToast("Add a more detailed image prompt.");
+    const size=state.format==="landscape"?"1536x1024":state.format==="square"?"1024x1024":"1024x1536";
+    setLoading(true,"Creating LIW advertising image","Generating a clean commercial visual without text.");
+    try{
+      const res=await fetch(`${cfg.supabaseUrl}/functions/v1/${cfg.imageFunction}`,{method:"POST",headers:{"Content-Type":"application/json","apikey":cfg.supabasePublishableKey,"x-liw-studio-key":cfg.studioKey},body:JSON.stringify({prompt,size,quality:"medium"})});
+      const data=await res.json();if(!res.ok)throw new Error(data.error||"Image generation failed.");setImage(`data:${data.mimeType||"image/png"};base64,${data.imageBase64}`);showToast("AI image added to the design.");
+    }catch(error){showToast(error.message);if(!state.image)useBrandArt()}finally{setLoading(false)}
   }
 
-  function generateCaptions() {
-    const service = state.service;
-    const s = currentSettings();
-    const hashtags = makeHashtags(service, s.platformId);
-    const benefitLine = service.benefits.map(item => `✓ ${item}`).join("\n");
+  function uploadImage(event){const file=event.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{setImage(reader.result);showToast("Image uploaded.")};reader.readAsDataURL(file)}
+  function setImage(url){state.image=url;const layer=$("#photoLayer"),thumb=$("#imageThumb"),img=$("#imageThumbImg");layer.style.backgroundImage=url?`url("${url}")`:"";if(url){img.src=url;thumb.classList.add("has-image")}else{img.removeAttribute("src");thumb.classList.remove("has-image")}}
 
-    const concise = `${s.tone.opener}\n\n${s.topic}\n\n${service.solution}\n\n${s.cta}\n\n${hashtags}`;
-
-    const problemSolution = `${s.goal.hook}\n\nTHE PROBLEM:\n${service.problem}\n\nTHE LIW SOLUTION:\n${service.solution}\n\n${benefitLine}\n\n${s.cta}\n\n873 Liberty Ave, Brooklyn, NY 11208\n${hashtags}`;
-
-    const story = `What happens when ${service.audience} finally get the right support?\n\nThey spend less time feeling stuck and more time moving forward.\n\n${s.topic}\n\nAt LIW Worgs Inc., we focus on practical solutions, clear communication, and professional service.\n\n${s.goal.ending}\n\n${s.cta}\n\n${hashtags}`;
-
-    state.captions = [
-      { name: "Direct", tag: "High impact", text: concise },
-      { name: "Problem–Solution", tag: "Best default", text: problemSolution },
-      { name: "Trust Story", tag: "Relationship", text: story }
-    ];
-    state.selectedCaption = 1;
-    renderCaptions();
+  function useBrandArt(){
+    const canvas=document.createElement("canvas");canvas.width=1200;canvas.height=1200;const x=canvas.getContext("2d");
+    const palettes={advertising:["#06192d","#1670d9","#f4b51f"],web:["#071b37","#1d72e8","#7ec8ff"],print:["#1a1231","#dc3f76","#f6b923"],realestate:["#072c2c","#218c74","#e3b65d"],property:["#12243e","#3c6e91","#e8c16c"],tax:["#14283a","#1f8a70","#f1c75b"],credit:["#201344","#7448d8","#f0b429"],funding:["#092c28","#1a9b72","#e3bd5d"],eyeglasses:["#162138","#4773c9","#f0b429"]};
+    const [a,b,c]=palettes[state.service.id]||palettes.advertising;let g=x.createLinearGradient(0,0,1200,1200);g.addColorStop(0,a);g.addColorStop(.62,b);g.addColorStop(1,a);x.fillStyle=g;x.fillRect(0,0,1200,1200);
+    x.globalAlpha=.17;x.fillStyle="#fff";x.beginPath();x.arc(980,160,330,0,Math.PI*2);x.fill();x.globalAlpha=.12;x.lineWidth=3;x.strokeStyle="#fff";for(let i=0;i<6;i++){x.beginPath();x.arc(930,200,110+i*55,0,Math.PI*2);x.stroke()}
+    x.globalAlpha=.9;x.fillStyle=c;x.beginPath();x.moveTo(0,950);x.lineTo(730,1200);x.lineTo(0,1200);x.closePath();x.fill();x.globalAlpha=.08;x.fillStyle="#fff";for(let i=0;i<9;i++)x.fillRect(80+i*120,90,2,760);
+    setImage(canvas.toDataURL("image/png"));showToast("LIW brand artwork applied.");
   }
 
-  function renderCaptions() {
-    const wrap = $("#captionOptions");
-    wrap.innerHTML = state.captions.map((caption, index) => `
-      <article class="caption-option${index === state.selectedCaption ? " selected" : ""}" data-caption-index="${index}">
-        <div class="caption-option-header"><strong>${caption.name}</strong><span>${caption.tag}</span></div>
-        <p>${escapeHtml(caption.text.length > 430 ? `${caption.text.slice(0, 430)}…` : caption.text)}</p>
-        <button>${index === state.selectedCaption ? "Selected" : "Use this caption"}</button>
-      </article>
-    `).join("");
-    $$(".caption-option", wrap).forEach(card => card.addEventListener("click", () => selectCaption(Number(card.dataset.captionIndex))));
-    const selected = state.captions[state.selectedCaption]?.text || "";
-    $("#finalCaption").value = selected;
-    updateCaptionCount();
+  async function downloadPost(){
+    const c=$("#postCanvas");const old=c.style.transform;c.style.transform="none";setLoading(true,"Exporting post","Rendering a high-resolution PNG.");
+    try{const out=await html2canvas(c,{scale:2,useCORS:true,backgroundColor:null,logging:false});const a=document.createElement("a");a.download=`LIW-${state.service.id}-${state.layout}-${state.format}.png`;a.href=out.toDataURL("image/png",1);a.click();showToast("Post downloaded.")}catch(e){showToast("Could not export the design.")}finally{c.style.transform=old;setLoading(false)}
   }
 
-  function selectCaption(index) {
-    state.selectedCaption = index;
-    renderCaptions();
+  function emailContext(){return {business:clean($("#businessName").value)||"your business",contact:clean($("#contactName").value)||"Business Owner",email:clean($("#recipientEmail").value),type:$("#businessType").value,template:$("#emailTemplate").value,service:SERVICES.find(s=>s.id===$("#emailService").value)||SERVICES[0],offer:clean($("#emailOffer").value)||"a brief consultation",tone:$("#emailTone").value}}
+
+  function generateEmail(){
+    const c=emailContext();const subjects=subjectLines(c);state.subjects=subjects;state.selectedSubject=subjects[0];renderSubjects();
+    state.currentEmail=emailBody(c);$("#emailBodyEditor").value=state.currentEmail;$("#previewTo").textContent=c.email?`${c.contact} <${c.email}>`:c.contact;renderEmailPreview();
   }
 
-  function updateCaptionCount() {
-    $("#captionCount").textContent = `${$("#finalCaption").value.length} characters`;
+  function subjectLines(c){
+    const n=c.business==="your business"?"your business":c.business;
+    const map={
+      introduction:[`A local resource for ${n}`,`${n} + LIW Worgs Inc.`,`Ways LIW can support ${n}`],
+      "website-audit":[`A quick website opportunity for ${n}`,`Could ${n}'s website generate more leads?`,`A practical digital improvement for ${n}`],
+      visibility:[`Helping more local customers find ${n}`,`A visibility idea for ${n}`,`Get ${n} seen by more customers`],
+      print:[`Professional marketing materials for ${n}`,`A stronger visual brand for ${n}`,`Flyers, banners and design support for ${n}`],
+      partnership:[`A referral partnership idea for ${n}`,`Can LIW support your customers?`,`Local partnership opportunity`],
+      "follow-up":[`Following up from LIW Worgs Inc.`,`Next steps for ${n}`,`Checking in regarding ${c.service.name}`],
+      offer:[`A special LIW opportunity for ${n}`,`${c.offer} for ${n}`,`An offer to strengthen ${n}`]
+    };return map[c.template]||map.introduction;
   }
 
-  function buildImagePrompt() {
-    const service = state.service;
-    const s = currentSettings();
-    const styleInstructions = {
-      commercial: "polished commercial advertising photography, crisp lighting, clean composition, room for text overlay",
-      photorealistic: "highly photorealistic documentary-style photography, authentic people, natural skin texture, realistic New York setting",
-      local: "authentic Brooklyn neighborhood atmosphere, diverse local community, warm natural light, credible small-business advertising",
-      premium: "premium luxury advertising photography, sophisticated lighting, refined composition, dark navy and subtle gold visual accents",
-      "3d": "modern 3D commercial illustration, realistic materials, dynamic depth, polished advertising render, navy blue and gold accent details",
-      editorial: "high-end editorial magazine photography, striking composition, cinematic contrast, authentic professional subject"
-    };
-    const sizeNote = s.platformId === "story" ? "vertical 9:16 composition" : s.platformId === "facebook" || s.platformId === "linkedin" ? "wide 1.91:1 composition" : "square 1:1 composition";
-    return `Create an original advertising background image for LIW Worgs Inc. promoting ${service.name}. Scene: ${service.visuals}. ${styleInstructions[state.imageStyle]}. ${sizeNote}. Use a professional color atmosphere compatible with dark navy blue, royal blue, white, and gold branding. No logos, no readable text, no watermarks, no extra fingers, no distorted objects. Leave clean negative space where a headline can be added. The image should feel trustworthy, modern, useful, and appropriate for a real Brooklyn service business.`;
+  function emailBody(c){
+    const greeting=c.contact==="Business Owner"?"Hello,":`Hello ${c.contact},`;
+    const intro=c.tone==="friendly"?`I hope your week is going well. I’m reaching out from LIW Worgs Inc., a Brooklyn-based business solutions company.`:c.tone==="direct"?`I’m reaching out from LIW Worgs Inc. because we help businesses improve how they present, promote and serve customers.`:`I’m contacting you on behalf of LIW Worgs Inc., a Brooklyn-based company providing practical business and marketing solutions.`;
+    const specific={
+      introduction:`I came across ${c.business} and wanted to introduce our team. We support ${c.type.toLowerCase()} operators with ${c.service.name.toLowerCase()} and related business services.`,
+      "website-audit":`A business website should quickly explain what you do, build trust and make it easy for customers to contact you. We help businesses improve that experience through mobile-friendly websites, landing pages, forms and digital tools.`,
+      visibility:`Many strong local businesses are difficult to find online or do not have a consistent message across social media, print and their website. LIW helps create a clearer, more professional advertising presence.`,
+      print:`Professional flyers, banners, signs, business cards and branded graphics can make a major difference in how customers view a company. LIW provides design and print-ready marketing support.`,
+      partnership:`LIW provides services that may complement what ${c.business} already offers. I would like to explore a simple referral relationship that could create value for both businesses and our customers.`,
+      "follow-up":`I wanted to follow up regarding ${c.service.name.toLowerCase()} and see whether this is still something ${c.business} would like to improve.`,
+      offer:`We are currently offering ${c.offer}. This could be a useful first step for ${c.business} to review its current marketing and identify practical improvements.`
+    }[c.template];
+    return `${greeting}\n\n${intro}\n\n${specific}\n\nFor ${c.business}, we can provide ${c.service.name.toLowerCase()} focused on clearer communication, stronger presentation and easier customer response. We are currently offering ${c.offer}.\n\nWould you be open to a short conversation this week? I can explain the options and answer any questions without obligation.\n\nThank you,\nDamion Thomas\nLIW Worgs Inc.\n873 Liberty Ave, Brooklyn, NY 11208\n347-423-9364\nliwworgsinc@gmail.com\nhttps://liwworgs.com`;
   }
 
-  function updateImagePrompt() {
-    state.imagePrompt = buildImagePrompt();
-    $("#imagePrompt").value = state.imagePrompt;
+  function renderSubjects(){
+    $("#subjectOptions").innerHTML=state.subjects.map((s,i)=>`<button class="subject-option ${i===0?"active":""}" data-subject="${esc(s)}">${esc(s)}</button>`).join("");
+    $$(".subject-option").forEach(b=>b.addEventListener("click",()=>{state.selectedSubject=b.dataset.subject;$$(".subject-option").forEach(x=>x.classList.toggle("active",x===b));renderEmailPreview()}));
   }
 
-  function generatePostPackage() {
-    generateCaptions();
-    updateImagePrompt();
-    const serviceHeadline = state.service.headlines[Math.floor(Math.random() * state.service.headlines.length)];
-    $("#designHeadlineInput").value = serviceHeadline;
-    $("#designSubtextInput").value = currentSettings().topic;
-    $("#canvasHeadline").textContent = serviceHeadline;
-    $("#canvasSubtext").textContent = currentSettings().topic;
-    $("#canvasKicker").textContent = currentSettings().goal.label.toUpperCase();
-    $("#canvasServiceTag").textContent = state.service.name.toUpperCase();
-    if (!state.imageUrl) useAbstractBackground(false);
-    switchWorkspace("copy");
-    showToast("Post package created for LIW Worgs Inc.");
+  function renderEmailPreview(){
+    $("#previewSubject").textContent=state.selectedSubject;const text=$("#emailBodyEditor").value||state.currentEmail;const html=esc(text).replace(/(https:\/\/liwworgs\.com)/g,'<a href="$1">$1</a>').replace(/\n/g,"<br>");$("#emailBodyPreview").innerHTML=html;
   }
 
-  function abstractSvg(service, accent = "#f5b301") {
-    const title = service.name.toUpperCase().replace(/&/g, "AND");
-    const icon = service.id === "real-estate" ? "⌂" : service.id === "eyeglasses" ? "◉—◉" : service.id === "taxes" ? "$" : "LIW";
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1400" viewBox="0 0 1400 1400">
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061329"/><stop offset=".58" stop-color="#123e77"/><stop offset="1" stop-color="#1871dc"/></linearGradient>
-        <radialGradient id="r" cx="70%" cy="20%" r="70%"><stop stop-color="#ffffff" stop-opacity=".25"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
-      </defs>
-      <rect width="1400" height="1400" fill="url(#g)"/>
-      <circle cx="1120" cy="160" r="410" fill="url(#r)"/>
-      <circle cx="1120" cy="160" r="300" fill="none" stroke="${accent}" stroke-width="8" opacity=".65"/>
-      <circle cx="1120" cy="160" r="230" fill="none" stroke="#fff" stroke-width="2" opacity=".26"/>
-      <path d="M-80 1110 C330 810 560 1350 970 1030 S1510 800 1520 800 V1460 H-80Z" fill="${accent}" opacity=".16"/>
-      <path d="M0 1220 C360 1000 620 1430 1010 1110 S1430 960 1430 960" fill="none" stroke="#fff" stroke-width="5" opacity=".17"/>
-      <g transform="translate(900 790)"><rect x="0" y="0" width="330" height="330" rx="72" fill="${accent}"/><text x="165" y="194" text-anchor="middle" font-family="Arial" font-size="92" font-weight="800" fill="#08172f">${icon}</text></g>
-      <text x="85" y="1230" font-family="Arial" font-size="24" font-weight="700" letter-spacing="6" fill="#fff" opacity=".45">${title}</text>
-    </svg>`;
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  function openGmail(){const c=emailContext();const url=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(c.email)}&su=${encodeURIComponent(state.selectedSubject)}&body=${encodeURIComponent($("#emailBodyEditor").value)}`;window.open(url,"_blank","noopener")}
+  function openMail(){const c=emailContext();window.location.href=`mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent(state.selectedSubject)}&body=${encodeURIComponent($("#emailBodyEditor").value)}`}
+  function downloadEmailHtml(){const body=$("#emailBodyEditor").value;const html=`<!doctype html><html><body style="font-family:Arial,sans-serif;color:#1f2d3d;line-height:1.65;max-width:680px;margin:40px auto;padding:24px"><div style="border-top:8px solid #071a2d;padding-top:24px"><div style="display:inline-block;background:#f4b51f;color:#071a2d;font-weight:bold;padding:10px 14px;border-radius:10px">LIW WORGS INC.</div><h2 style="color:#071a2d">${esc(state.selectedSubject)}</h2><p style="white-space:pre-wrap">${esc(body)}</p></div></body></html>`;download(html,`LIW-email-${Date.now()}.html`,`text/html`);showToast("Email HTML downloaded.")}
+
+  function readCSV(event){const file=event.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{const lines=String(reader.result).split(/\r?\n/).filter(Boolean);const rows=lines.slice(1).map(line=>parseCSVLine(line)).filter(r=>r.length);state.recipients=rows.map(r=>({business:r[0]||"",contact:r[1]||"",email:r[2]||""})).filter(r=>r.email);renderRecipients();showToast(`${state.recipients.length} contacts imported.`)};reader.readAsText(file)}
+  function parseCSVLine(line){const result=[];let value="",quoted=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'&&line[i+1]==='"'){value+='"';i++}else if(ch==='"'){quoted=!quoted}else if(ch===','&&!quoted){result.push(value.trim());value=""}else value+=ch}result.push(value.trim());return result}
+  function renderRecipients(){$("#recipientList").innerHTML=state.recipients.slice(0,30).map((r,i)=>`<div class="recipient-chip"><span>${esc(r.business||r.contact)} · ${esc(r.email)}</span><button data-recipient="${i}">Use</button></div>`).join("");$$('[data-recipient]').forEach(b=>b.addEventListener("click",()=>{const r=state.recipients[Number(b.dataset.recipient)];$("#businessName").value=r.business;$("#contactName").value=r.contact;$("#recipientEmail").value=r.email;generateEmail();showToast("Recipient loaded.")}))}
+
+  function renderCampaign(){
+    const s=state.service;const days=["Monday: Problem","Tuesday: Education","Wednesday: Service","Thursday: Trust","Friday: Offer","Saturday: Local","Sunday: Call to action"];
+    $("#campaignGrid").innerHTML=days.map((d,i)=>{const headline=s.headlines[i%s.headlines.length];const copy=[s.problem,`Three reasons to consider ${s.name.toLowerCase()}: clearer guidance, professional support and practical next steps.`,s.solution,`LIW Worgs Inc. is a Brooklyn-based company focused on practical, responsive service.`,`This week, ask about ${s.name.toLowerCase()} and the best next step for your needs.`,`Brooklyn businesses and residents deserve dependable support close to home.`,`Call 347-423-9364 to discuss ${s.name.toLowerCase()} today.`][i];return `<article class="campaign-card"><span>${d}</span><h3>${esc(headline)}</h3><p>${esc(copy)}</p><button class="button ghost" data-campaign="${i}">Load into Post Studio</button></article>`}).join("");$$('[data-campaign]').forEach(b=>b.addEventListener("click",()=>{const i=Number(b.dataset.campaign);$("#headlineInput").value=s.headlines[i%s.headlines.length];$("#subtextInput").value=$(".campaign-card p",b.closest(".campaign-card")).textContent;updateCanvasCopy();switchView("post");showToast("Campaign idea loaded.")}));lucide.createIcons();
   }
 
-  function useAbstractBackground(notify = true) {
-    const url = abstractSvg(state.service, $("#accentColor")?.value || "#f5b301");
-    setImage(url);
-    if (notify) showToast("LIW branded graphic background applied.");
+  function quickSave(){
+    const active=$(".view.active")?.id;if(active==="emailView")saveEmail();else savePost();
   }
-
-  function setImage(url) {
-    state.imageUrl = url;
-    const image = $("#generatedImage");
-    image.src = url;
-    $("#imagePreview").classList.add("has-image");
-    $("#downloadRawImageButton").disabled = false;
-    applyCanvasBackground();
+  function savePost(){state.saved.unshift({id:crypto.randomUUID?.()||Date.now(),type:"post",service:state.service.name,headline:$("#headlineInput").value,subtext:$("#subtextInput").value,caption:$("#captionInput").value,layout:state.layout,format:state.format,image:state.image,created:new Date().toISOString()});state.saved=state.saved.slice(0,40);saveJSON();renderLibrary();updateSavedCount();showToast("Post saved in this browser.")}
+  function saveEmail(){const c=emailContext();state.saved.unshift({id:crypto.randomUUID?.()||Date.now(),type:"email",business:c.business,recipient:c.email,subject:state.selectedSubject,body:$("#emailBodyEditor").value,created:new Date().toISOString()});state.saved=state.saved.slice(0,40);saveJSON();renderLibrary();updateSavedCount();showToast("Email saved in this browser.")}
+  function updateSavedCount(){$("#savedCount").textContent=state.saved.length}
+  function renderLibrary(){
+    const grid=$("#libraryGrid");if(!state.saved.length){grid.innerHTML=`<article class="panel" style="padding:30px;grid-column:1/-1;text-align:center;color:#6d7b8f">Nothing saved yet. Create a post or email and click Save.</article>`;return}
+    grid.innerHTML=state.saved.map((item,i)=>`<article class="library-card">${item.type==="post"?`<div class="library-thumb" style="${item.image?`background-image:url('${item.image}')`:""}"></div>`:""}<div class="library-body"><span>${item.type}</span><h3>${esc(item.type==="post"?item.headline:item.subject)}</h3><p>${esc(item.type==="post"?item.service:`${item.business}${item.recipient?" · "+item.recipient:""}`)}</p><div class="library-actions"><button class="button ghost" data-load="${i}">Load</button><button class="button ghost" data-delete="${i}">Delete</button></div></div></article>`).join("");
+    $$('[data-load]').forEach(b=>b.addEventListener("click",()=>loadSaved(Number(b.dataset.load))));$$('[data-delete]').forEach(b=>b.addEventListener("click",()=>{state.saved.splice(Number(b.dataset.delete),1);saveJSON();renderLibrary();updateSavedCount()}));
   }
+  function loadSaved(i){const item=state.saved[i];if(item.type==="post"){$("#headlineInput").value=item.headline;$("#subtextInput").value=item.subtext;$("#captionInput").value=item.caption;state.layout=item.layout||"executive";state.format=item.format||"square";$("#formatSelect").value=state.format;setImage(item.image||null);applyLayout();applyFormat();updateCanvasCopy();switchView("post")}else{$("#businessName").value=item.business||"";$("#recipientEmail").value=item.recipient||"";state.selectedSubject=item.subject;state.subjects=[item.subject];state.currentEmail=item.body;$("#emailBodyEditor").value=item.body;renderSubjects();renderEmailPreview();switchView("email")}showToast("Saved work loaded.")}
 
-  function applyCanvasBackground() {
-    const bg = $("#canvasBackground");
-    if (state.imageUrl) bg.style.backgroundImage = `url("${state.imageUrl.replace(/"/g, "%22")}")`;
-    bg.style.transform = `scale(${$("#imageZoom").value / 100})`;
-    bg.style.backgroundPosition = `center ${$("#imagePosition").value}%`;
-  }
-
-  async function generateAiImage() {
-    const prompt = $("#imagePrompt").value.trim();
-    if (!prompt) return showToast("Add an image prompt first.");
-    if (!cfg.supabaseUrl || !cfg.supabasePublishableKey) return showToast("Supabase image configuration is missing.");
-
-    const size = currentSettings().platformId === "story" ? "1024x1536" : currentSettings().platformId === "facebook" || currentSettings().platformId === "linkedin" ? "1536x1024" : "1024x1024";
-    setLoading(true, "Generating the LIW advertising image", "The secure Supabase function is contacting the image model.");
-    $("#aiStatus").classList.remove("ready");
-
-    try {
-      const response = await fetch(`${cfg.supabaseUrl}/functions/v1/${cfg.imageFunction || "liw-generate-image"}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": cfg.supabasePublishableKey,
-          "Authorization": `Bearer ${cfg.supabasePublishableKey}`,
-          "x-liw-studio-key": cfg.studioKey || ""
-        },
-        body: JSON.stringify({ prompt, size, quality: "medium" })
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || "Image generation failed.");
-      if (!data.imageBase64) throw new Error("The image service returned no image.");
-      setImage(`data:${data.mimeType || "image/png"};base64,${data.imageBase64}`);
-      $("#aiStatus").classList.add("ready");
-      $("#aiStatus").innerHTML = '<i data-lucide="circle-check"></i>AI image generated';
-      lucide.createIcons();
-      showToast("AI advertising image generated.");
-    } catch (error) {
-      console.error(error);
-      useAbstractBackground(false);
-      showToast(`${error.message} A branded background was applied instead.`);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function handleImageUpload(file) {
-    if (!file) return;
-    if (!file.type.startsWith("image/")) return showToast("Choose a PNG, JPG, or WebP image.");
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImage(reader.result);
-      showToast("Image uploaded.");
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function downloadDataUrl(url, filename) {
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    document.body.append(link);
-    link.click();
-    link.remove();
-  }
-
-  function syncDesignFromCurrent() {
-    const headline = $("#designHeadlineInput").value.trim() || state.service.headlines[0];
-    const subtext = $("#designSubtextInput").value.trim() || currentSettings().topic;
-    $("#canvasHeadline").textContent = headline;
-    $("#canvasSubtext").textContent = subtext;
-    $("#canvasServiceTag").textContent = state.service.name.toUpperCase();
-    $("#canvasKicker").textContent = currentSettings().goal.label.toUpperCase();
-    applyCanvasBackground();
-  }
-
-  function renderTemplates() {
-    $("#templatePicker").innerHTML = TEMPLATES.map(template => `<button class="template-thumb${template === state.template ? " selected" : ""}" data-template="${template}" title="${template}"></button>`).join("");
-    $$(".template-thumb").forEach(button => button.addEventListener("click", () => {
-      state.template = button.dataset.template;
-      renderTemplates();
-      updateCanvasClass();
-    }));
-  }
-
-  function updateCanvasClass() {
-    const canvas = $("#postCanvas");
-    canvas.className = `post-canvas size-${state.canvasSize} template-${state.template}`;
-    canvas.style.setProperty("--canvas-headline", $("#headlineColor").value);
-    canvas.style.setProperty("--canvas-accent", $("#accentColor").value);
-  }
-
-  function selectCanvasSize(size) {
-    state.canvasSize = size;
-    $$("#sizePicker button").forEach(button => button.classList.toggle("selected", button.dataset.size === size));
-    updateCanvasClass();
-  }
-
-  function resetCanvasLayout() {
-    const positions = {
-      logo: { x: 0, y: 0 },
-      tag: { x: 0, y: 0 },
-      copy: { x: 0, y: 0 },
-      contact: { x: 0, y: 0 }
-    };
-    $$(".draggable", $("#postCanvas")).forEach(element => {
-      element.style.transform = "translate(0px, 0px)";
-      element.dataset.x = "0";
-      element.dataset.y = "0";
-    });
-    $("#extraElements").innerHTML = "";
-    showToast("Design layout reset.");
-  }
-
-  function initInteract() {
-    if (!window.interact) return;
-    interact(".draggable").draggable({
-      modifiers: [interact.modifiers.restrictRect({ restriction: "parent", endOnly: true })],
-      listeners: {
-        move(event) {
-          const target = event.target;
-          const x = (parseFloat(target.dataset.x) || 0) + event.dx;
-          const y = (parseFloat(target.dataset.y) || 0) + event.dy;
-          target.style.transform = `translate(${x}px, ${y}px)`;
-          target.dataset.x = String(x);
-          target.dataset.y = String(y);
-        }
-      }
-    });
-    interact(".resizable, .extra-element").resizable({
-      edges: { left: true, right: true, bottom: true, top: true },
-      modifiers: [interact.modifiers.restrictEdges({ outer: "parent" }), interact.modifiers.restrictSize({ min: { width: 80, height: 34 } })],
-      listeners: {
-        move(event) {
-          const target = event.target;
-          let x = parseFloat(target.dataset.x) || 0;
-          let y = parseFloat(target.dataset.y) || 0;
-          target.style.width = `${event.rect.width}px`;
-          target.style.height = `${event.rect.height}px`;
-          x += event.deltaRect.left;
-          y += event.deltaRect.top;
-          target.style.transform = `translate(${x}px, ${y}px)`;
-          target.dataset.x = String(x);
-          target.dataset.y = String(y);
-        }
-      }
-    });
-  }
-
-  function addExtraElement(type) {
-    const id = `extra-${Date.now()}`;
-    const el = document.createElement("div");
-    el.id = id;
-    el.className = `extra-element ${type}`;
-    el.contentEditable = "true";
-    el.textContent = type === "badge" ? "CALL NOW" : "Double-click to edit";
-    el.style.left = type === "badge" ? "63%" : "12%";
-    el.style.top = type === "badge" ? "19%" : "68%";
-    el.dataset.x = "0";
-    el.dataset.y = "0";
-    $("#extraElements").append(el);
-    initInteract();
-    showToast(`${type === "badge" ? "Badge" : "Text"} added. Click the words to edit.`);
-  }
-
-  async function renderCanvas(scale = 2.5) {
-    return html2canvas($("#postCanvas"), { scale, useCORS: true, backgroundColor: null, logging: false });
-  }
-
-  async function downloadPost() {
-    setLoading(true, "Preparing high-resolution post", "Rendering the finished LIW design as a PNG.");
-    try {
-      const canvas = await renderCanvas(3);
-      downloadDataUrl(canvas.toDataURL("image/png", 1), `liw-${state.service.id}-${state.canvasSize}-${Date.now()}.png`);
-      showToast("Finished post downloaded.");
-    } catch (error) {
-      console.error(error);
-      showToast("The design could not be exported. Try using an uploaded image or branded background.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function savePost() {
-    setLoading(true, "Saving LIW post", "Creating a lightweight preview for the browser library.");
-    try {
-      const canvas = await renderCanvas(1.2);
-      const preview = await compressCanvas(canvas, 620, 0.76);
-      state.saved.unshift({
-        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-        serviceId: state.service.id,
-        serviceName: state.service.name,
-        headline: $("#designHeadlineInput").value,
-        subtext: $("#designSubtextInput").value,
-        caption: $("#finalCaption").value,
-        template: state.template,
-        size: state.canvasSize,
-        preview,
-        createdAt: new Date().toISOString()
-      });
-      state.saved = state.saved.slice(0, 15);
-      persistSaved();
-      renderLibrary();
-      showToast("Post saved in this browser.");
-    } catch (error) {
-      console.error(error);
-      showToast("Could not save the post preview.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function compressCanvas(sourceCanvas, maxWidth, quality) {
-    return new Promise(resolve => {
-      const ratio = Math.min(1, maxWidth / sourceCanvas.width);
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(sourceCanvas.width * ratio);
-      canvas.height = Math.round(sourceCanvas.height * ratio);
-      canvas.getContext("2d").drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL("image/jpeg", quality));
-    });
-  }
-
-  function renderLibrary() {
-    $("#savedBadge").textContent = state.saved.length;
-    const grid = $("#libraryGrid");
-    grid.innerHTML = state.saved.map(item => `
-      <article class="library-card" data-id="${item.id}">
-        <img src="${item.preview}" alt="${escapeHtml(item.serviceName)} post preview">
-        <div class="library-card-content">
-          <h3>${escapeHtml(item.headline || item.serviceName)}</h3>
-          <p>${escapeHtml(item.caption || "")}</p>
-          <div class="library-actions">
-            <button data-action="copy">Copy caption</button>
-            <button data-action="reopen">Reopen</button>
-            <button data-action="delete">Delete</button>
-          </div>
-        </div>
-      </article>
-    `).join("");
-    $$(".library-card", grid).forEach(card => {
-      const item = state.saved.find(saved => saved.id === card.dataset.id);
-      $$("button", card).forEach(button => button.addEventListener("click", () => handleLibraryAction(button.dataset.action, item)));
-    });
-  }
-
-  function handleLibraryAction(action, item) {
-    if (!item) return;
-    if (action === "copy") return copyText(item.caption);
-    if (action === "delete") {
-      state.saved = state.saved.filter(saved => saved.id !== item.id);
-      persistSaved();
-      renderLibrary();
-      return showToast("Saved post deleted.");
-    }
-    const service = SERVICES.find(entry => entry.id === item.serviceId) || SERVICES[0];
-    state.service = service;
-    state.template = item.template || "impact";
-    state.canvasSize = item.size || "square";
-    $("#designHeadlineInput").value = item.headline || service.headlines[0];
-    $("#designSubtextInput").value = item.subtext || service.defaultTopic;
-    $("#finalCaption").value = item.caption || "";
-    renderServices();
-    renderTemplates();
-    selectCanvasSize(state.canvasSize);
-    syncDesignFromCurrent();
-    switchView("create");
-    switchWorkspace("design");
-    showToast("Saved post reopened. The original background preview remains in the library card.");
-  }
-
-  function copyText(text) {
-    navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard.")).catch(() => {
-      const area = document.createElement("textarea");
-      area.value = text;
-      document.body.append(area);
-      area.select();
-      document.execCommand("copy");
-      area.remove();
-      showToast("Copied to clipboard.");
-    });
-  }
-
-  function updateCampaignSummary() {
-    const s = currentSettings();
-    $("#campaignServiceName").textContent = state.service.name;
-    $("#campaignGoalName").textContent = s.goal.label;
-    $("#campaignPlatformName").textContent = s.platform.label;
-  }
-
-  function generateCampaign() {
-    const service = state.service;
-    const s = currentSettings();
-    const themes = [
-      { type: "Problem", title: `The real cost of ignoring ${service.name.toLowerCase()}`, body: `${service.problem}\n\n${s.cta}` },
-      { type: "Solution", title: `A better way to handle ${service.name.toLowerCase()}`, body: `${service.solution}\n\n${s.cta}` },
-      { type: "Benefits", title: `Three reasons to choose LIW`, body: `${service.benefits.map((benefit, index) => `${index + 1}. ${benefit}`).join("\n")}\n\n${s.cta}` },
-      { type: "Education", title: `What customers should know`, body: `${s.topic}\n\nKnowing the process before you begin can save time and reduce confusion.\n\n${s.cta}` },
-      { type: "Trust", title: `Local service. Clear communication.`, body: `LIW Worgs Inc. serves Brooklyn and the surrounding New York community with practical support and professional service.\n\n${s.cta}` },
-      { type: "FAQ", title: `Do you need help with ${service.name.toLowerCase()}?`, body: `Start with a conversation about your situation, goals, timing, and the result you need. We will explain the next step clearly.\n\n${s.cta}` },
-      { type: "Action", title: service.headlines[0], body: `${s.goal.hook}\n\n${s.topic}\n\n${s.goal.ending}\n\n${s.cta}` }
-    ];
-    state.campaign = themes.map((theme, index) => ({
-      day: index + 1,
-      ...theme,
-      caption: `${theme.body}\n\n${makeHashtags(service, s.platformId)}`
-    }));
-    renderCampaign();
-    showToast("Seven-day LIW campaign created.");
-  }
-
-  function renderCampaign() {
-    const grid = $("#campaignGrid");
-    grid.innerHTML = state.campaign.map(item => `
-      <article class="campaign-card">
-        <div class="campaign-card-top"><span class="campaign-day">DAY ${item.day}</span><h3>${escapeHtml(item.title)}</h3><span>${escapeHtml(item.type)} post</span></div>
-        <div class="campaign-card-body"><p>${escapeHtml(item.caption)}</p><div class="campaign-card-actions"><button data-copy="${item.day}">Copy</button><button data-design="${item.day}">Design</button></div></div>
-      </article>
-    `).join("");
-    $$('[data-copy]', grid).forEach(button => button.addEventListener("click", () => copyText(state.campaign[Number(button.dataset.copy) - 1].caption)));
-    $$('[data-design]', grid).forEach(button => button.addEventListener("click", () => {
-      const item = state.campaign[Number(button.dataset.design) - 1];
-      $("#finalCaption").value = item.caption;
-      $("#designHeadlineInput").value = item.title;
-      $("#designSubtextInput").value = item.body.split("\n\n")[0];
-      syncDesignFromCurrent();
-      switchView("create");
-      switchWorkspace("design");
-    }));
-  }
-
-  function bindEvents() {
-    $$(".nav-button").forEach(button => button.addEventListener("click", () => switchView(button.dataset.view)));
-    $("#mobileMenu").addEventListener("click", () => $(".top-nav").classList.toggle("open"));
-    $$(".workspace-tab").forEach(button => button.addEventListener("click", () => switchWorkspace(button.dataset.workspace)));
-    $$('[data-next-workspace]').forEach(button => button.addEventListener("click", () => switchWorkspace(button.dataset.nextWorkspace)));
-
-    $("#generatePostButton").addEventListener("click", generatePostPackage);
-    $("#regenerateCopyButton").addEventListener("click", generatePostPackage);
-    $("#finalCaption").addEventListener("input", updateCaptionCount);
-    $("#copyCaptionButton").addEventListener("click", () => copyText($("#finalCaption").value));
-
-    $("#campaignGoal").addEventListener("change", () => { updateCampaignSummary(); updateImagePrompt(); });
-    $("#platform").addEventListener("change", () => { updateCampaignSummary(); updateImagePrompt(); selectCanvasSize(PLATFORMS[$("#platform").value].size); });
-    $("#tone").addEventListener("change", updateImagePrompt);
-    $("#postTopic").addEventListener("input", () => { $("#designSubtextInput").value = $("#postTopic").value; });
-
-    $$("#stylePicker button").forEach(button => button.addEventListener("click", () => {
-      state.imageStyle = button.dataset.style;
-      $$("#stylePicker button").forEach(item => item.classList.toggle("selected", item === button));
-      updateImagePrompt();
-    }));
-    $("#generateImageButton").addEventListener("click", generateAiImage);
-    $("#imageUpload").addEventListener("change", event => handleImageUpload(event.target.files[0]));
-    $("#useAbstractButton").addEventListener("click", () => useAbstractBackground());
-    $("#downloadRawImageButton").addEventListener("click", () => state.imageUrl && downloadDataUrl(state.imageUrl, `liw-${state.service.id}-image.png`));
-
-    $("#designHeadlineInput").addEventListener("input", syncDesignFromCurrent);
-    $("#designSubtextInput").addEventListener("input", syncDesignFromCurrent);
-    $("#headlineColor").addEventListener("input", updateCanvasClass);
-    $("#accentColor").addEventListener("input", () => { updateCanvasClass(); if (state.imageUrl.startsWith("data:image/svg")) useAbstractBackground(false); });
-    $("#imageZoom").addEventListener("input", applyCanvasBackground);
-    $("#imagePosition").addEventListener("input", applyCanvasBackground);
-    $$("#sizePicker button").forEach(button => button.addEventListener("click", () => selectCanvasSize(button.dataset.size)));
-    $("#addBadgeButton").addEventListener("click", () => addExtraElement("badge"));
-    $("#addTextButton").addEventListener("click", () => addExtraElement("text"));
-    $("#resetLayoutButton").addEventListener("click", resetCanvasLayout);
-    $("#downloadPostButton").addEventListener("click", downloadPost);
-    $("#savePostButton").addEventListener("click", savePost);
-
-    $("#generateCampaignButton").addEventListener("click", generateCampaign);
-    $("#clearLibraryButton").addEventListener("click", () => {
-      state.saved = [];
-      persistSaved();
-      renderLibrary();
-      showToast("Saved-post library cleared.");
-    });
-  }
-
-  function init() {
-    $("#postTopic").value = state.service.defaultTopic;
-    renderServices();
-    renderTemplates();
-    renderLibrary();
-    persistSaved();
-    generatePostPackage();
-    selectCanvasSize(PLATFORMS[$("#platform").value].size);
-    bindEvents();
-    initInteract();
-    updateCampaignSummary();
-    lucide.createIcons();
-  }
-
-  init();
+  initialize();
 })();
