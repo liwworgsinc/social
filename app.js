@@ -1,56 +1,189 @@
 (() => {
   "use strict";
 
-  const config = window.POSTPILOT_CONFIG;
-  if (!config?.supabaseUrl || !config?.supabasePublishableKey) {
-    document.body.innerHTML = "<p style='padding:30px;font-family:sans-serif'>Supabase configuration is missing.</p>";
-    return;
-  }
-
-  const db = window.supabase.createClient(config.supabaseUrl, config.supabasePublishableKey);
+  const cfg = window.LIW_STUDIO_CONFIG || {};
   const $ = (selector, parent = document) => parent.querySelector(selector);
   const $$ = (selector, parent = document) => [...parent.querySelectorAll(selector)];
 
-  const state = {
-    session: null,
-    user: null,
-    brand: null,
-    templates: [],
-    generatedPosts: [],
-    libraryPosts: [],
-    queue: [],
-    activeTemplate: null,
-    currentWebsiteId: null,
-    authMode: "signin",
-    workspaceLoaded: false,
-    selectedPlatforms: new Set(["instagram", "facebook"]),
-    designer: {
-      canvas: null,
-      size: "square",
-      history: [],
-      historyIndex: -1,
-      historyLock: false,
+  const SERVICES = [
+    {
+      id: "advertising",
+      name: "Business Advertising",
+      short: "Ads & promotion",
+      icon: "megaphone",
+      audience: "local businesses that need more attention and customers",
+      problem: "Many good businesses stay invisible because their message is unclear, inconsistent, or not reaching the right people.",
+      solution: "LIW Worgs Inc. creates coordinated advertising across social media, websites, print, radio, television, and digital business tools.",
+      defaultTopic: "We help local businesses get noticed with social media content, websites, print advertising, digital business cards, radio and television promotion.",
+      benefits: ["Stronger visibility", "Professional brand image", "More ways for customers to find you"],
+      visuals: "a confident Black small-business owner reviewing professional advertising materials and social media content in a modern Brooklyn office",
+      hashtags: ["LIWWorgs", "BrooklynBusiness", "SmallBusinessMarketing", "BusinessAdvertising", "GetNoticed"],
+      headlines: ["MAKE YOUR BUSINESS IMPOSSIBLE TO IGNORE.", "GOOD BUSINESS DESERVES GREAT ADVERTISING.", "GET SEEN. GET REMEMBERED. GET CUSTOMERS."]
     },
+    {
+      id: "web-design",
+      name: "Web & Digital Solutions",
+      short: "Websites & NFC",
+      icon: "monitor-smartphone",
+      audience: "business owners who need a professional online presence",
+      problem: "An outdated, confusing, or missing website can make a legitimate business look unprepared and cost it valuable leads.",
+      solution: "LIW Worgs Inc. builds mobile-friendly websites, landing pages, forms, digital business cards, NFC tools, and online customer experiences.",
+      defaultTopic: "We build professional mobile-friendly websites and digital tools that help customers understand, trust, and contact your business.",
+      benefits: ["Mobile-friendly design", "Better customer experience", "Clear calls to action"],
+      visuals: "a professional Black web designer presenting a polished business website on a desktop monitor and smartphone, modern office, Brooklyn entrepreneur",
+      hashtags: ["LIWWorgs", "WebDesign", "BrooklynWebDesigner", "DigitalBusiness", "SmallBusinessWebsite"],
+      headlines: ["YOUR WEBSITE SHOULD WORK AS HARD AS YOU DO.", "TURN CLICKS INTO REAL CUSTOMERS.", "BUILD A DIGITAL PRESENCE PEOPLE TRUST."]
+    },
+    {
+      id: "print",
+      name: "Print & Graphic Design",
+      short: "Flyers, banners & logos",
+      icon: "printer",
+      audience: "businesses, events, organizations, and professionals that need polished printed materials",
+      problem: "Poor-quality graphics and inconsistent print materials can make a strong offer look unprofessional.",
+      solution: "LIW Worgs Inc. designs logos, flyers, banners, signs, business cards, menus, labels, and other print-ready marketing materials.",
+      defaultTopic: "From logos and flyers to banners and business cards, we create professional print designs that make your business stand out.",
+      benefits: ["Print-ready artwork", "Consistent branding", "Professional presentation"],
+      visuals: "a stylish display of premium flyers, business cards, banners and branded print materials on a design studio table, Black-owned business branding",
+      hashtags: ["LIWWorgs", "GraphicDesign", "BrooklynPrinting", "FlyerDesign", "BusinessBranding"],
+      headlines: ["PRINT MATERIALS THAT DEMAND ATTENTION.", "YOUR BRAND SHOULD LOOK PROFESSIONAL EVERYWHERE.", "FROM IDEA TO PRINT-READY DESIGN."]
+    },
+    {
+      id: "real-estate",
+      name: "Real Estate Services",
+      short: "Sales & rentals",
+      icon: "house-key",
+      audience: "buyers, sellers, renters, landlords, and property owners in New York",
+      problem: "Finding the right property or qualified customer can be stressful when information, communication, and follow-up are scattered.",
+      solution: "LIW Worgs Inc. supports residential and commercial sales, rentals, property marketing, and customer guidance from inquiry through the next step.",
+      defaultTopic: "Looking to buy, sell, or rent in New York? LIW Worgs Inc. helps you understand your options and move forward confidently.",
+      benefits: ["Local market guidance", "Property promotion", "Responsive communication"],
+      visuals: "a professional Black real estate advisor standing outside a beautiful Brooklyn brownstone with a confident client, warm daylight, authentic New York neighborhood",
+      hashtags: ["LIWWorgs", "BrooklynRealEstate", "NYCRentals", "HomeBuyers", "PropertyForSale"],
+      headlines: ["YOUR NEXT MOVE STARTS WITH THE RIGHT GUIDANCE.", "BUY. SELL. RENT. MOVE FORWARD.", "REAL ESTATE SUPPORT BUILT AROUND YOU."]
+    },
+    {
+      id: "property-management",
+      name: "Property Management",
+      short: "Reliable property support",
+      icon: "building-2",
+      audience: "landlords and property owners who want dependable day-to-day support",
+      problem: "Maintenance coordination, tenant communication, inspections, and recurring property tasks can consume an owner’s time and energy.",
+      solution: "LIW Worgs Inc. provides practical property-management support designed to protect the property, improve communication, and reduce owner stress.",
+      defaultTopic: "Spend less time chasing property problems. LIW Worgs Inc. helps owners coordinate maintenance, communication, inspections, and recurring property needs.",
+      benefits: ["Less owner stress", "Organized communication", "Dependable coordination"],
+      visuals: "a professional Black property manager inspecting a clean Brooklyn apartment building with tablet and keys, trustworthy and organized",
+      hashtags: ["LIWWorgs", "PropertyManagement", "BrooklynLandlord", "RentalProperty", "PropertyCare"],
+      headlines: ["OWN THE PROPERTY—NOT THE DAILY STRESS.", "DEPENDABLE SUPPORT FOR YOUR PROPERTY.", "PROTECT YOUR PROPERTY. SAVE YOUR TIME."]
+    },
+    {
+      id: "taxes",
+      name: "Income Tax Services",
+      short: "Personal & business taxes",
+      icon: "receipt-text",
+      audience: "individuals, families, and small-business owners who need organized tax help",
+      problem: "Tax paperwork, missed documents, and uncertainty about filing can create stress and expensive mistakes.",
+      solution: "LIW Worgs Inc. helps customers organize information, understand the process, and prepare personal or business tax filings accurately.",
+      defaultTopic: "Tax time does not have to feel overwhelming. Get organized, understand what you need, and file with professional support from LIW Worgs Inc.",
+      benefits: ["Clear guidance", "Organized preparation", "Personal and business support"],
+      visuals: "a professional Black tax preparer helping a client review organized financial documents in a welcoming Brooklyn office, calm and trustworthy",
+      hashtags: ["LIWWorgs", "TaxPreparation", "BrooklynTaxes", "SmallBusinessTaxes", "TaxHelp"],
+      headlines: ["TAX TIME WITHOUT THE CONFUSION.", "GET ORGANIZED. GET PREPARED. GET FILED.", "PROFESSIONAL TAX SUPPORT STARTS HERE."]
+    },
+    {
+      id: "credit",
+      name: "Credit Solutions",
+      short: "Credit education & disputes",
+      icon: "chart-no-axes-combined",
+      audience: "people who want to better understand and improve their credit profile",
+      problem: "Errors, outdated information, high balances, and a lack of strategy can make credit improvement feel confusing and discouraging.",
+      solution: "LIW Worgs Inc. provides credit analysis, education, dispute support, progress tracking, and a practical plan for stronger financial habits.",
+      defaultTopic: "Your credit report should tell the correct story. LIW Worgs Inc. helps you review, understand, and address questionable information while building better habits.",
+      benefits: ["Credit-report review", "Dispute support", "Education and progress tracking"],
+      visuals: "a confident Black financial consultant explaining a credit improvement plan to a client using a tablet, professional office, hopeful and empowering",
+      hashtags: ["LIWWorgs", "CreditEducation", "CreditRepair", "FinancialGoals", "BetterCredit"],
+      headlines: ["YOUR CREDIT STORY CAN CHANGE.", "UNDERSTAND IT. ADDRESS IT. IMPROVE IT.", "A STRONGER CREDIT PLAN STARTS TODAY."]
+    },
+    {
+      id: "business-loans",
+      name: "Business Funding",
+      short: "Loan & funding guidance",
+      icon: "landmark",
+      audience: "entrepreneurs and established businesses exploring funding options",
+      problem: "Business owners often need capital but are unsure which funding options fit their goals, qualifications, and repayment ability.",
+      solution: "LIW Worgs Inc. helps business owners organize their information, explore possible funding paths, and prepare for conversations with financing providers.",
+      defaultTopic: "Need capital to grow, purchase equipment, or manage cash flow? Start by understanding your business-funding options with LIW Worgs Inc.",
+      benefits: ["Funding-option guidance", "Document preparation", "Clear next steps"],
+      visuals: "a Black entrepreneur and professional business advisor reviewing a growth and funding plan in a modern office, ambitious small business setting",
+      hashtags: ["LIWWorgs", "BusinessFunding", "SmallBusinessLoans", "EntrepreneurSupport", "BusinessGrowth"],
+      headlines: ["FUND YOUR NEXT BUSINESS MOVE.", "GROWTH NEEDS A PLAN—AND THE RIGHT CAPITAL.", "EXPLORE FUNDING WITH CLARITY."]
+    },
+    {
+      id: "eyeglasses",
+      name: "Eyeglasses Repair",
+      short: "Just Eyes mobile service",
+      icon: "glasses",
+      audience: "people who need convenient eyewear repair, adjustment, or frame support",
+      problem: "Loose, bent, or damaged glasses are uncomfortable and can disrupt work, driving, reading, and everyday life.",
+      solution: "LIW Worgs Inc. and Just Eyes provide practical eyeglasses repair, adjustments, frame support, and convenient service options.",
+      defaultTopic: "Do not struggle with uncomfortable or damaged eyewear. Ask about eyeglasses repair, adjustments, frames, and convenient service from Just Eyes.",
+      benefits: ["Convenient repair", "Professional adjustment", "Frame and eyewear support"],
+      visuals: "a skilled Black optical professional carefully adjusting eyeglasses with precision tools at a clean eyewear repair station, clear focus on the glasses",
+      hashtags: ["JustEyes", "LIWWorgs", "EyeglassesRepair", "BrooklynOptical", "GlassesAdjustment"],
+      headlines: ["BROKEN OR UNCOMFORTABLE GLASSES? LET’S FIX THAT.", "SEE BETTER. FEEL BETTER. WEAR THEM COMFORTABLY.", "PROFESSIONAL EYEGLASS REPAIR MADE CONVENIENT."]
+    }
+  ];
+
+  const GOALS = {
+    awareness: { label: "Build awareness", hook: "People cannot choose a service they do not know exists.", ending: "Save this post and share it with someone who may need this service." },
+    leads: { label: "Get calls and leads", hook: "Ready to stop searching and speak with someone who can help?", ending: "Call now to discuss what you need and the next step." },
+    offer: { label: "Promote a special offer", hook: "A better time to take action may be right now.", ending: "Ask about current pricing, availability, or promotional options." },
+    education: { label: "Educate customers", hook: "Knowing what to look for can save time, money, and frustration.", ending: "Follow LIW Worgs Inc. for more practical business and service information." },
+    trust: { label: "Build trust and credibility", hook: "The right provider should explain the process and treat your goals seriously.", ending: "Choose local support that values clear communication and professional service." },
+    urgent: { label: "Create urgency", hook: "Waiting can allow a small problem to become more expensive or harder to solve.", ending: "Contact LIW Worgs Inc. today instead of putting it off again." }
   };
 
-  const routes = {
-    generator: ["generatorRoute", "Content engine", "Generate posts"],
-    designer: ["designerRoute", "Built-in creative studio", "Design a social graphic"],
-    library: ["libraryRoute", "Supabase content database", "Post library"],
-    calendar: ["calendarRoute", "Approval and scheduling", "Content queue"],
-    brand: ["brandRoute", "Reusable business identity", "Brand kit"],
+  const TONES = {
+    bold: { label: "Bold", opener: "STOP SETTLING FOR A WEAK SOLUTION.", adjective: "direct, confident, energetic" },
+    professional: { label: "Professional", opener: "Professional support can make the next step clearer.", adjective: "professional, polished, trustworthy" },
+    friendly: { label: "Friendly", opener: "Let’s make this easier for you.", adjective: "warm, welcoming, authentic" },
+    premium: { label: "Premium", opener: "Your goals deserve a more polished experience.", adjective: "premium, sophisticated, refined" },
+    urgent: { label: "Urgent", opener: "Do not wait until the problem gets worse.", adjective: "urgent, high-impact, action-oriented" }
   };
 
-  const platformNames = { instagram: "Instagram", facebook: "Facebook", linkedin: "LinkedIn", x: "X / Twitter" };
-  const canvasSizes = {
-    square: { width: 620, height: 620 },
-    portrait: { width: 560, height: 700 },
-    landscape: { width: 760, height: 398 },
-    story: { width: 405, height: 720 },
+  const PLATFORMS = {
+    instagram: { label: "Instagram", size: "square" },
+    facebook: { label: "Facebook", size: "landscape" },
+    linkedin: { label: "LinkedIn", size: "landscape" },
+    story: { label: "Story", size: "story" }
   };
+
+  const TEMPLATES = ["impact", "split", "glass", "light", "offer", "local", "editorial", "blueprint"];
+  const state = {
+    service: SERVICES[0],
+    captions: [],
+    selectedCaption: 0,
+    imageUrl: "",
+    imagePrompt: "",
+    imageStyle: "commercial",
+    template: "impact",
+    canvasSize: "square",
+    saved: loadSaved(),
+    campaign: []
+  };
+
+  function loadSaved() {
+    try { return JSON.parse(localStorage.getItem("liw_ad_studio_saved") || "[]"); }
+    catch { return []; }
+  }
+
+  function persistSaved() {
+    localStorage.setItem("liw_ad_studio_saved", JSON.stringify(state.saved.slice(0, 15)));
+    $("#savedBadge").textContent = state.saved.length;
+  }
 
   function escapeHtml(value = "") {
-    return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+    return String(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
   }
 
   function showToast(message) {
@@ -58,817 +191,577 @@
     toast.textContent = message;
     toast.classList.add("show");
     clearTimeout(showToast.timer);
-    showToast.timer = setTimeout(() => toast.classList.remove("show"), 2600);
+    showToast.timer = setTimeout(() => toast.classList.remove("show"), 2800);
   }
 
-  function setMessage(element, message = "", type = "") {
-    element.textContent = message;
-    element.className = `form-message${type ? ` ${type}` : ""}`;
+  function setLoading(active, title = "Creating your image", text = "This may take a moment.") {
+    $("#loadingOverlay").classList.toggle("active", active);
+    $("#loadingOverlay").setAttribute("aria-hidden", String(!active));
+    $("#loadingTitle").textContent = title;
+    $("#loadingText").textContent = text;
   }
 
-  function setSaving(saving, message = "Saving…") {
-    $("#saveState").textContent = saving ? message : "All changes saved";
+  function switchView(viewName) {
+    $$(".view").forEach(view => view.classList.toggle("active", view.id === `${viewName}View`));
+    $$(".nav-button").forEach(button => button.classList.toggle("active", button.dataset.view === viewName));
+    $(".top-nav")?.classList.remove("open");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function setButtonBusy(button, busy, label = "Working…") {
-    if (busy) {
-      button.dataset.original = button.textContent;
-      button.disabled = true;
-      button.textContent = label;
-    } else {
-      button.disabled = false;
-      button.textContent = button.dataset.original || button.textContent;
-    }
+  function switchWorkspace(name) {
+    $$(".workspace-tab").forEach(button => button.classList.toggle("active", button.dataset.workspace === name));
+    $$(".workspace-panel").forEach(panel => panel.classList.toggle("active", panel.id === `${name}Workspace`));
+    if (name === "design") syncDesignFromCurrent();
   }
 
-  function switchRoute(routeName) {
-    const route = routes[routeName] ? routeName : "generator";
-    $$(".route").forEach((section) => section.classList.remove("active"));
-    $$(".nav-link").forEach((button) => button.classList.toggle("active", button.dataset.route === route));
-    $(`#${routes[route][0]}`).classList.add("active");
-    $("#pageEyebrow").textContent = routes[route][1];
-    $("#pageTitle").textContent = routes[route][2];
-    $("#sidebar").classList.remove("open");
-    history.replaceState(null, "", `#${route}`);
-    if (route === "designer" && state.designer.canvas) setTimeout(() => state.designer.canvas.calcOffset(), 40);
+  function renderServices() {
+    const grid = $("#serviceGrid");
+    grid.innerHTML = SERVICES.map(service => `
+      <button class="service-card${service.id === state.service.id ? " selected" : ""}" data-service="${service.id}">
+        <span class="service-icon"><i data-lucide="${service.icon}"></i></span>
+        <strong>${escapeHtml(service.name)}</strong>
+        <small>${escapeHtml(service.short)}</small>
+        <i>✓</i>
+      </button>
+    `).join("");
+    $$(".service-card", grid).forEach(button => button.addEventListener("click", () => selectService(button.dataset.service)));
+    lucide.createIcons();
   }
 
-  function updateAccountUI() {
-    const email = state.user?.email || "Sign in";
-    $("#accountEmail").textContent = email;
-    $("#accountInitial").textContent = (state.brand?.name || email || "?").charAt(0).toUpperCase();
-    $("#authModal").classList.toggle("active", !state.user);
+  function selectService(serviceId) {
+    state.service = SERVICES.find(service => service.id === serviceId) || SERVICES[0];
+    renderServices();
+    $("#serviceStatus").textContent = state.service.name;
+    $("#postTopic").value = state.service.defaultTopic;
+    $("#canvasServiceTag").textContent = state.service.name.toUpperCase();
+    $("#campaignServiceName").textContent = state.service.name;
+    updateCampaignSummary();
+    generatePostPackage();
   }
 
-  async function handleAuthSubmit(event) {
-    event.preventDefault();
-    const email = $("#authEmail").value.trim();
-    const password = $("#authPassword").value;
-    const displayName = $("#authName").value.trim();
-    const button = $("#authSubmitButton");
-    const message = $("#authMessage");
-    setMessage(message);
-    setButtonBusy(button, true, state.authMode === "signin" ? "Signing in…" : "Creating account…");
-
-    try {
-      if (state.authMode === "signin") {
-        const { error } = await db.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-      } else {
-        const { data, error } = await db.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { display_name: displayName || email.split("@")[0] },
-            emailRedirectTo: `${location.origin}${location.pathname}`,
-          },
-        });
-        if (error) throw error;
-        if (!data.session) setMessage(message, "Account created. Check your email to confirm it, then sign in.", "success");
-      }
-    } catch (error) {
-      setMessage(message, error.message || "Authentication failed.", "error");
-    } finally {
-      setButtonBusy(button, false);
-    }
-  }
-
-  function toggleAuthMode() {
-    state.authMode = state.authMode === "signin" ? "signup" : "signin";
-    const signup = state.authMode === "signup";
-    $("#authName").classList.toggle("hidden", !signup);
-    $("#authNameLabel").classList.toggle("hidden", !signup);
-    $("#authPassword").autocomplete = signup ? "new-password" : "current-password";
-    $("#authSubmitButton").textContent = signup ? "Create account" : "Sign in";
-    $("#toggleAuthMode").textContent = signup ? "I already have an account" : "Create a new account";
-    $("#authMessage").textContent = "";
-  }
-
-  async function signOut() {
-    await db.auth.signOut();
-    state.workspaceLoaded = false;
-    state.brand = null;
-    state.libraryPosts = [];
-    state.queue = [];
-    updateAccountUI();
-  }
-
-  async function initializeAuth() {
-    const { data } = await db.auth.getSession();
-    state.session = data.session;
-    state.user = data.session?.user || null;
-    updateAccountUI();
-    if (state.user) await loadWorkspace();
-
-    db.auth.onAuthStateChange(async (_event, session) => {
-      state.session = session;
-      state.user = session?.user || null;
-      updateAccountUI();
-      if (state.user && !state.workspaceLoaded) await loadWorkspace();
-    });
-  }
-
-  async function loadWorkspace() {
-    state.workspaceLoaded = true;
-    setSaving(true, "Loading workspace…");
-    await Promise.all([loadTemplates(), loadBrand(), loadLibrary(), loadQueue()]);
-    if (!state.designer.canvas) initDesigner();
-    renderTemplateList();
-    populateBrandForms();
-    updateAccountUI();
-    setSaving(false);
-  }
-
-  async function loadTemplates() {
-    const { data, error } = await db.from("design_templates").select("*").order("created_at");
-    if (error) {
-      console.error(error);
-      return;
-    }
-    state.templates = data || [];
-    state.activeTemplate ||= state.templates[0] || null;
-  }
-
-  async function loadBrand() {
-    const { data, error } = await db.from("brands").select("*").order("created_at").limit(1).maybeSingle();
-    if (error) console.error(error);
-    if (data) {
-      state.brand = data;
-      return;
-    }
-
-    const defaultName = state.user?.user_metadata?.display_name ? `${state.user.user_metadata.display_name}'s Brand` : "My Business";
-    const { data: inserted, error: insertError } = await db.from("brands").insert({ user_id: state.user.id, name: defaultName }).select().single();
-    if (insertError) console.error(insertError);
-    state.brand = inserted || null;
-  }
-
-  function populateBrandForms() {
-    if (!state.brand) return;
-    const brand = state.brand;
-    $("#brandName").value = brand.name || "";
-    $("#websiteUrl").value = brand.website_url || "";
-    $("#audience").value = brand.audience || "";
-    $("#callToAction").value = brand.call_to_action || "";
-    $("#brandVoice").value = brand.brand_voice || "professional";
-    $("#tone").value = brand.brand_voice || "professional";
-
-    $("#brandSettingsName").value = brand.name || "";
-    $("#brandSettingsWebsite").value = brand.website_url || "";
-    $("#brandSettingsAudience").value = brand.audience || "";
-    $("#brandSettingsCta").value = brand.call_to_action || "";
-    $("#brandSettingsVoice").value = brand.brand_voice || "professional";
-    $("#primaryColor").value = brand.primary_color || "#5b3df5";
-    $("#secondaryColor").value = brand.secondary_color || "#171629";
-    $("#accentColor").value = brand.accent_color || "#f3b63f";
-    if (brand.logo_path) loadLogoPreview(brand.logo_path);
-  }
-
-  async function saveBrand() {
-    if (!state.user) return;
-    const button = $("#saveBrandButton");
-    setButtonBusy(button, true, "Saving…");
-    setSaving(true);
-    const payload = {
-      user_id: state.user.id,
-      name: $("#brandSettingsName").value.trim() || "My Business",
-      website_url: $("#brandSettingsWebsite").value.trim() || null,
-      audience: $("#brandSettingsAudience").value.trim() || null,
-      call_to_action: $("#brandSettingsCta").value.trim() || null,
-      brand_voice: $("#brandSettingsVoice").value,
-      primary_color: $("#primaryColor").value,
-      secondary_color: $("#secondaryColor").value,
-      accent_color: $("#accentColor").value,
+  function currentSettings() {
+    return {
+      goal: GOALS[$("#campaignGoal").value] || GOALS.awareness,
+      goalId: $("#campaignGoal").value,
+      tone: TONES[$("#tone").value] || TONES.bold,
+      toneId: $("#tone").value,
+      platform: PLATFORMS[$("#platform").value] || PLATFORMS.instagram,
+      platformId: $("#platform").value,
+      topic: $("#postTopic").value.trim() || state.service.defaultTopic,
+      cta: $("#customCta").value.trim() || "Call LIW Worgs Inc. today at 347-423-9364"
     };
-
-    const query = state.brand?.id
-      ? db.from("brands").update(payload).eq("id", state.brand.id)
-      : db.from("brands").insert(payload);
-    const { data, error } = await query.select().single();
-    if (error) showToast(error.message);
-    else {
-      state.brand = data;
-      populateBrandForms();
-      updateAccountUI();
-      showToast("Brand kit saved.");
-    }
-    setSaving(false);
-    setButtonBusy(button, false);
   }
 
-  async function uploadLogo(file) {
-    if (!file || !state.user) return;
-    if (file.size > 10 * 1024 * 1024) return showToast("Logo must be smaller than 10 MB.");
-    const extension = file.name.split(".").pop()?.toLowerCase() || "png";
-    const path = `${state.user.id}/logos/logo-${Date.now()}.${extension}`;
-    setSaving(true, "Uploading logo…");
-    const { error: uploadError } = await db.storage.from("brand-assets").upload(path, file, { cacheControl: "3600", upsert: false });
-    if (uploadError) {
-      setSaving(false);
-      return showToast(uploadError.message);
-    }
-    const { data, error } = await db.from("brands").update({ logo_path: path }).eq("id", state.brand.id).select().single();
-    if (error) showToast(error.message);
-    else {
-      state.brand = data;
-      await loadLogoPreview(path);
-      showToast("Logo uploaded.");
-    }
-    setSaving(false);
+  function makeHashtags(service, platformId) {
+    if (platformId === "linkedin") return service.hashtags.slice(0, 4).map(tag => `#${tag}`).join(" ");
+    return service.hashtags.map(tag => `#${tag}`).join(" ");
   }
 
-  async function signedAssetUrl(path, expires = 3600) {
-    const { data, error } = await db.storage.from("brand-assets").createSignedUrl(path, expires);
-    if (error) throw error;
-    return data.signedUrl;
+  function generateCaptions() {
+    const service = state.service;
+    const s = currentSettings();
+    const hashtags = makeHashtags(service, s.platformId);
+    const benefitLine = service.benefits.map(item => `✓ ${item}`).join("\n");
+
+    const concise = `${s.tone.opener}\n\n${s.topic}\n\n${service.solution}\n\n${s.cta}\n\n${hashtags}`;
+
+    const problemSolution = `${s.goal.hook}\n\nTHE PROBLEM:\n${service.problem}\n\nTHE LIW SOLUTION:\n${service.solution}\n\n${benefitLine}\n\n${s.cta}\n\n873 Liberty Ave, Brooklyn, NY 11208\n${hashtags}`;
+
+    const story = `What happens when ${service.audience} finally get the right support?\n\nThey spend less time feeling stuck and more time moving forward.\n\n${s.topic}\n\nAt LIW Worgs Inc., we focus on practical solutions, clear communication, and professional service.\n\n${s.goal.ending}\n\n${s.cta}\n\n${hashtags}`;
+
+    state.captions = [
+      { name: "Direct", tag: "High impact", text: concise },
+      { name: "Problem–Solution", tag: "Best default", text: problemSolution },
+      { name: "Trust Story", tag: "Relationship", text: story }
+    ];
+    state.selectedCaption = 1;
+    renderCaptions();
   }
 
-  async function loadLogoPreview(path) {
+  function renderCaptions() {
+    const wrap = $("#captionOptions");
+    wrap.innerHTML = state.captions.map((caption, index) => `
+      <article class="caption-option${index === state.selectedCaption ? " selected" : ""}" data-caption-index="${index}">
+        <div class="caption-option-header"><strong>${caption.name}</strong><span>${caption.tag}</span></div>
+        <p>${escapeHtml(caption.text.length > 430 ? `${caption.text.slice(0, 430)}…` : caption.text)}</p>
+        <button>${index === state.selectedCaption ? "Selected" : "Use this caption"}</button>
+      </article>
+    `).join("");
+    $$(".caption-option", wrap).forEach(card => card.addEventListener("click", () => selectCaption(Number(card.dataset.captionIndex))));
+    const selected = state.captions[state.selectedCaption]?.text || "";
+    $("#finalCaption").value = selected;
+    updateCaptionCount();
+  }
+
+  function selectCaption(index) {
+    state.selectedCaption = index;
+    renderCaptions();
+  }
+
+  function updateCaptionCount() {
+    $("#captionCount").textContent = `${$("#finalCaption").value.length} characters`;
+  }
+
+  function buildImagePrompt() {
+    const service = state.service;
+    const s = currentSettings();
+    const styleInstructions = {
+      commercial: "polished commercial advertising photography, crisp lighting, clean composition, room for text overlay",
+      photorealistic: "highly photorealistic documentary-style photography, authentic people, natural skin texture, realistic New York setting",
+      local: "authentic Brooklyn neighborhood atmosphere, diverse local community, warm natural light, credible small-business advertising",
+      premium: "premium luxury advertising photography, sophisticated lighting, refined composition, dark navy and subtle gold visual accents",
+      "3d": "modern 3D commercial illustration, realistic materials, dynamic depth, polished advertising render, navy blue and gold accent details",
+      editorial: "high-end editorial magazine photography, striking composition, cinematic contrast, authentic professional subject"
+    };
+    const sizeNote = s.platformId === "story" ? "vertical 9:16 composition" : s.platformId === "facebook" || s.platformId === "linkedin" ? "wide 1.91:1 composition" : "square 1:1 composition";
+    return `Create an original advertising background image for LIW Worgs Inc. promoting ${service.name}. Scene: ${service.visuals}. ${styleInstructions[state.imageStyle]}. ${sizeNote}. Use a professional color atmosphere compatible with dark navy blue, royal blue, white, and gold branding. No logos, no readable text, no watermarks, no extra fingers, no distorted objects. Leave clean negative space where a headline can be added. The image should feel trustworthy, modern, useful, and appropriate for a real Brooklyn service business.`;
+  }
+
+  function updateImagePrompt() {
+    state.imagePrompt = buildImagePrompt();
+    $("#imagePrompt").value = state.imagePrompt;
+  }
+
+  function generatePostPackage() {
+    generateCaptions();
+    updateImagePrompt();
+    const serviceHeadline = state.service.headlines[Math.floor(Math.random() * state.service.headlines.length)];
+    $("#designHeadlineInput").value = serviceHeadline;
+    $("#designSubtextInput").value = currentSettings().topic;
+    $("#canvasHeadline").textContent = serviceHeadline;
+    $("#canvasSubtext").textContent = currentSettings().topic;
+    $("#canvasKicker").textContent = currentSettings().goal.label.toUpperCase();
+    $("#canvasServiceTag").textContent = state.service.name.toUpperCase();
+    if (!state.imageUrl) useAbstractBackground(false);
+    switchWorkspace("copy");
+    showToast("Post package created for LIW Worgs Inc.");
+  }
+
+  function abstractSvg(service, accent = "#f5b301") {
+    const title = service.name.toUpperCase().replace(/&/g, "AND");
+    const icon = service.id === "real-estate" ? "⌂" : service.id === "eyeglasses" ? "◉—◉" : service.id === "taxes" ? "$" : "LIW";
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1400" viewBox="0 0 1400 1400">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061329"/><stop offset=".58" stop-color="#123e77"/><stop offset="1" stop-color="#1871dc"/></linearGradient>
+        <radialGradient id="r" cx="70%" cy="20%" r="70%"><stop stop-color="#ffffff" stop-opacity=".25"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+      </defs>
+      <rect width="1400" height="1400" fill="url(#g)"/>
+      <circle cx="1120" cy="160" r="410" fill="url(#r)"/>
+      <circle cx="1120" cy="160" r="300" fill="none" stroke="${accent}" stroke-width="8" opacity=".65"/>
+      <circle cx="1120" cy="160" r="230" fill="none" stroke="#fff" stroke-width="2" opacity=".26"/>
+      <path d="M-80 1110 C330 810 560 1350 970 1030 S1510 800 1520 800 V1460 H-80Z" fill="${accent}" opacity=".16"/>
+      <path d="M0 1220 C360 1000 620 1430 1010 1110 S1430 960 1430 960" fill="none" stroke="#fff" stroke-width="5" opacity=".17"/>
+      <g transform="translate(900 790)"><rect x="0" y="0" width="330" height="330" rx="72" fill="${accent}"/><text x="165" y="194" text-anchor="middle" font-family="Arial" font-size="92" font-weight="800" fill="#08172f">${icon}</text></g>
+      <text x="85" y="1230" font-family="Arial" font-size="24" font-weight="700" letter-spacing="6" fill="#fff" opacity=".45">${title}</text>
+    </svg>`;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  }
+
+  function useAbstractBackground(notify = true) {
+    const url = abstractSvg(state.service, $("#accentColor")?.value || "#f5b301");
+    setImage(url);
+    if (notify) showToast("LIW branded graphic background applied.");
+  }
+
+  function setImage(url) {
+    state.imageUrl = url;
+    const image = $("#generatedImage");
+    image.src = url;
+    $("#imagePreview").classList.add("has-image");
+    $("#downloadRawImageButton").disabled = false;
+    applyCanvasBackground();
+  }
+
+  function applyCanvasBackground() {
+    const bg = $("#canvasBackground");
+    if (state.imageUrl) bg.style.backgroundImage = `url("${state.imageUrl.replace(/"/g, "%22")}")`;
+    bg.style.transform = `scale(${$("#imageZoom").value / 100})`;
+    bg.style.backgroundPosition = `center ${$("#imagePosition").value}%`;
+  }
+
+  async function generateAiImage() {
+    const prompt = $("#imagePrompt").value.trim();
+    if (!prompt) return showToast("Add an image prompt first.");
+    if (!cfg.supabaseUrl || !cfg.supabasePublishableKey) return showToast("Supabase image configuration is missing.");
+
+    const size = currentSettings().platformId === "story" ? "1024x1536" : currentSettings().platformId === "facebook" || currentSettings().platformId === "linkedin" ? "1536x1024" : "1024x1024";
+    setLoading(true, "Generating the LIW advertising image", "The secure Supabase function is contacting the image model.");
+    $("#aiStatus").classList.remove("ready");
+
     try {
-      const url = await signedAssetUrl(path);
-      $("#logoPreview").innerHTML = `<img src="${escapeHtml(url)}" alt="Brand logo">`;
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function generatePosts() {
-    if (!state.user) return;
-    const websiteUrl = $("#websiteUrl").value.trim();
-    const websiteText = $("#websiteText").value.trim();
-    if (!websiteUrl && websiteText.length < 60) {
-      setMessage($("#generatorMessage"), "Add a website URL or paste at least 60 characters of website information.", "error");
-      return;
-    }
-    const platforms = [...state.selectedPlatforms];
-    if (!platforms.length) return setMessage($("#generatorMessage"), "Select at least one platform.", "error");
-
-    const button = $("#generateButton");
-    setButtonBusy(button, true, "Analyzing and writing…");
-    setMessage($("#generatorMessage"), "Reading the offer and building problem–solution content…");
-
-    try {
-      const { data, error } = await db.functions.invoke("generate-posts", {
-        body: {
-          websiteUrl,
-          websiteText,
-          brandName: $("#brandName").value.trim(),
-          audience: $("#audience").value.trim(),
-          callToAction: $("#callToAction").value.trim(),
-          platforms,
-          framework: $("#framework").value,
-          tone: $("#tone").value,
-          count: Number($("#generationCount").value),
-          includeHashtags: $("#includeHashtags").checked,
+      const response = await fetch(`${cfg.supabaseUrl}/functions/v1/${cfg.imageFunction || "liw-generate-image"}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": cfg.supabasePublishableKey,
+          "Authorization": `Bearer ${cfg.supabasePublishableKey}`,
+          "x-liw-studio-key": cfg.studioKey || ""
         },
+        body: JSON.stringify({ prompt, size, quality: "medium" })
       });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      state.generatedPosts = (data.posts || []).map((post) => ({ ...post, id: null, status: "draft" }));
-      renderGeneratedPosts();
-      $("#resultsSection").classList.remove("hidden");
-      setMessage($("#generatorMessage"), `${state.generatedPosts.length} posts created. Edit, save or design them.`, "success");
-
-      const { data: websiteRow, error: websiteError } = await db.from("websites").insert({
-        user_id: state.user.id,
-        brand_id: state.brand?.id || null,
-        url: websiteUrl || null,
-        content: websiteText || null,
-        summary: data.analysis || {},
-        last_scanned_at: new Date().toISOString(),
-      }).select("id").single();
-      if (!websiteError) state.currentWebsiteId = websiteRow.id;
-      $("#resultsSection").scrollIntoView({ behavior: "smooth", block: "start" });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Image generation failed.");
+      if (!data.imageBase64) throw new Error("The image service returned no image.");
+      setImage(`data:${data.mimeType || "image/png"};base64,${data.imageBase64}`);
+      $("#aiStatus").classList.add("ready");
+      $("#aiStatus").innerHTML = '<i data-lucide="circle-check"></i>AI image generated';
+      lucide.createIcons();
+      showToast("AI advertising image generated.");
     } catch (error) {
       console.error(error);
-      setMessage($("#generatorMessage"), error.message || "Post generation failed.", "error");
+      useAbstractBackground(false);
+      showToast(`${error.message} A branded background was applied instead.`);
     } finally {
-      setButtonBusy(button, false);
+      setLoading(false);
     }
   }
 
-  function createPostCard(post, mode) {
-    const card = $("#postCardTemplate").content.firstElementChild.cloneNode(true);
-    const platformBadge = $(".platform-badge", card);
-    const status = $(".post-status", card);
-    const headline = $(".headline-input", card);
-    const body = $(".post-body-input", card);
-    const count = $(".character-count", card);
-    const framework = $(".framework-badge", card);
-    const saveButton = $(".save-post", card);
-
-    platformBadge.textContent = platformNames[post.platform] || post.platform;
-    status.textContent = post.status || (mode === "generated" ? "Draft" : "Saved");
-    headline.value = post.headline || "";
-    body.value = post.body || "";
-    framework.textContent = (post.framework || "problem-solution").replaceAll("-", " ");
-
-    const sync = () => {
-      post.headline = headline.value;
-      post.body = body.value;
-      count.textContent = `${body.value.length} characters`;
-    };
-    sync();
-    headline.addEventListener("input", sync);
-    body.addEventListener("input", sync);
-    $(".copy-post", card).addEventListener("click", () => copyText(`${headline.value}\n\n${body.value}`));
-    $(".design-post", card).addEventListener("click", () => loadPostIntoDesigner(post));
-
-    if (mode === "library") {
-      saveButton.textContent = "Update";
-      saveButton.addEventListener("click", () => updatePost(post));
-    } else {
-      saveButton.addEventListener("click", async () => {
-        sync();
-        await savePost(post);
-      });
-    }
-    return card;
-  }
-
-  function renderGeneratedPosts() {
-    const grid = $("#generatedPosts");
-    grid.innerHTML = "";
-    state.generatedPosts.forEach((post) => grid.append(createPostCard(post, "generated")));
-  }
-
-  async function savePost(post) {
-    if (post.id) return updatePost(post);
-    setSaving(true);
-    const { data, error } = await db.from("posts").insert({
-      user_id: state.user.id,
-      brand_id: state.brand?.id || null,
-      website_id: state.currentWebsiteId,
-      platform: post.platform,
-      framework: post.framework,
-      tone: post.tone,
-      headline: post.headline,
-      body: post.body,
-      hashtags: post.hashtags || [],
-      status: "saved",
-    }).select().single();
-    if (error) showToast(error.message);
-    else {
-      Object.assign(post, data);
-      showToast("Post saved to Supabase.");
-      await loadLibrary();
-    }
-    setSaving(false);
-  }
-
-  async function updatePost(post) {
-    if (!post.id) return savePost(post);
-    setSaving(true);
-    const { data, error } = await db.from("posts").update({ headline: post.headline, body: post.body, status: post.status === "draft" ? "saved" : post.status }).eq("id", post.id).select().single();
-    if (error) showToast(error.message);
-    else {
-      Object.assign(post, data);
-      showToast("Post updated.");
-      await loadLibrary();
-    }
-    setSaving(false);
-  }
-
-  async function saveAllGeneratedPosts() {
-    const button = $("#saveAllPostsButton");
-    setButtonBusy(button, true, "Saving…");
-    for (const post of state.generatedPosts) if (!post.id) await savePost(post);
-    setButtonBusy(button, false);
-    showToast("Generated posts saved.");
-  }
-
-  async function loadLibrary() {
-    const { data, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
-    if (error) {
-      console.error(error);
-      return;
-    }
-    state.libraryPosts = data || [];
-    renderLibrary();
-    $("#postCountBadge").textContent = state.libraryPosts.length;
-    populateScheduleSelect();
-  }
-
-  function renderLibrary() {
-    const grid = $("#libraryPosts");
-    grid.innerHTML = "";
-    state.libraryPosts.forEach((post) => grid.append(createPostCard(post, "library")));
-  }
-
-  function populateScheduleSelect() {
-    const select = $("#schedulePostSelect");
-    if (!state.libraryPosts.length) {
-      select.innerHTML = '<option value="">Save a post first</option>';
-      return;
-    }
-    select.innerHTML = state.libraryPosts.map((post) => `<option value="${post.id}">${escapeHtml(post.headline)} — ${escapeHtml(platformNames[post.platform])}</option>`).join("");
-  }
-
-  async function schedulePost() {
-    const postId = $("#schedulePostSelect").value;
-    const date = $("#scheduleDate").value;
-    const time = $("#scheduleTime").value;
-    const post = state.libraryPosts.find((item) => item.id === postId);
-    if (!post) return showToast("Choose a saved post.");
-    if (!date || !time) return showToast("Choose a date and time.");
-    const scheduledAt = new Date(`${date}T${time}`).toISOString();
-    const { error } = await db.from("scheduled_posts").insert({ user_id: state.user.id, post_id: post.id, platform: post.platform, scheduled_at: scheduledAt });
-    if (error) return showToast(error.message.includes("duplicate") ? "That post is already queued." : error.message);
-    await db.from("posts").update({ status: "queued", scheduled_at: scheduledAt }).eq("id", post.id);
-    await Promise.all([loadQueue(), loadLibrary()]);
-    showToast("Post added to the queue.");
-  }
-
-  async function loadQueue() {
-    const { data, error } = await db.from("scheduled_posts").select("*, posts(headline, body, platform)").order("scheduled_at");
-    if (error) {
-      console.error(error);
-      return;
-    }
-    state.queue = data || [];
-    renderQueue();
-    $("#queueCountBadge").textContent = state.queue.filter((item) => item.status === "pending").length;
-  }
-
-  function renderQueue() {
-    const list = $("#queueList");
-    list.innerHTML = "";
-    $("#queueSummary").textContent = `${state.queue.length} queued`;
-    state.queue.forEach((item) => {
-      const date = new Date(item.scheduled_at);
-      const row = document.createElement("article");
-      row.className = "queue-item";
-      row.innerHTML = `<div class="queue-date"><strong>${date.getDate()}</strong><span>${date.toLocaleString("en-US", { month: "short" })}</span></div><div class="queue-info"><strong>${escapeHtml(item.posts?.headline || "Scheduled post")}</strong><p>${escapeHtml(platformNames[item.platform] || item.platform)} · ${date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })} · ${escapeHtml(item.status)}</p></div><button aria-label="Remove">×</button>`;
-      $("button", row).addEventListener("click", () => removeFromQueue(item));
-      list.append(row);
-    });
-  }
-
-  async function removeFromQueue(item) {
-    const { error } = await db.from("scheduled_posts").delete().eq("id", item.id);
-    if (error) return showToast(error.message);
-    await db.from("posts").update({ status: "saved", scheduled_at: null }).eq("id", item.post_id);
-    await Promise.all([loadQueue(), loadLibrary()]);
-    showToast("Post removed from queue.");
-  }
-
-  function renderTemplateList() {
-    const list = $("#templateList");
-    list.innerHTML = "";
-    state.templates.forEach((template) => {
-      const card = document.createElement("button");
-      card.className = `template-card${state.activeTemplate?.id === template.id ? " active" : ""}`;
-      card.style.background = template.config?.background || "#5b3df5";
-      card.innerHTML = `<strong>${escapeHtml(template.name)}</strong><small>${escapeHtml(template.canvas_size)}</small>`;
-      card.addEventListener("click", () => {
-        state.activeTemplate = template;
-        state.designer.size = template.canvas_size || "square";
-        updateSizeButtons();
-        applyTemplate(template);
-        renderTemplateList();
-      });
-      list.append(card);
-    });
-  }
-
-  function initDesigner() {
-    const canvas = new fabric.Canvas("designCanvas", { preserveObjectStacking: true, selectionColor: "rgba(91,61,245,.12)", selectionBorderColor: "#5b3df5", selectionLineWidth: 2 });
-    state.designer.canvas = canvas;
-    setCanvasSize("square", false);
-
-    ["object:added", "object:modified", "object:removed"].forEach((eventName) => canvas.on(eventName, () => {
-      refreshLayers();
-      pushHistory();
-    }));
-    canvas.on("selection:created", updateObjectProperties);
-    canvas.on("selection:updated", updateObjectProperties);
-    canvas.on("selection:cleared", updateObjectProperties);
-
-    if (state.activeTemplate) applyTemplate(state.activeTemplate);
-  }
-
-  function setCanvasSize(size, preserve = true) {
-    const canvas = state.designer.canvas;
-    if (!canvas) return;
-    const dimensions = canvasSizes[size] || canvasSizes.square;
-    let json = null;
-    if (preserve && canvas.getObjects().length) json = canvas.toDatalessJSON(["dataRole", "dataLabel"]);
-    canvas.setDimensions(dimensions);
-    state.designer.size = size;
-    if (json) canvas.loadFromJSON(json, () => { canvas.renderAll(); resetHistory(); });
-    updateSizeButtons();
-  }
-
-  function updateSizeButtons() {
-    $$("#canvasSizePicker button").forEach((button) => button.classList.toggle("active", button.dataset.size === state.designer.size));
-  }
-
-  function makeTextbox(text, options = {}) {
-    return new fabric.Textbox(text, {
-      fontFamily: "Manrope",
-      fontWeight: 700,
-      fill: "#ffffff",
-      lineHeight: 1.05,
-      editable: true,
-      ...options,
-    });
-  }
-
-  function applyTemplate(template) {
-    const canvas = state.designer.canvas;
-    if (!canvas) return;
-    state.designer.historyLock = true;
-    const size = template.canvas_size || state.designer.size || "square";
-    setCanvasSize(size, false);
-    canvas.clear();
-    const width = canvas.getWidth();
-    const height = canvas.getHeight();
-    const cfg = template.config || {};
-    const background = cfg.background || state.brand?.primary_color || "#5b3df5";
-    const accent = cfg.accent || state.brand?.accent_color || "#f3b63f";
-    const textColor = cfg.text || "#ffffff";
-    canvas.backgroundColor = background;
-
-    const layout = cfg.layout || "split";
-    if (layout === "split") {
-      canvas.add(new fabric.Circle({ left: width * .67, top: -height * .13, radius: width * .3, fill: "rgba(255,255,255,.10)", selectable: false, evented: false, dataRole: "decoration", dataLabel: "Background circle" }));
-      canvas.add(new fabric.Rect({ left: 0, top: height * .75, width, height: height * .25, fill: accent, selectable: false, evented: false, dataRole: "accent", dataLabel: "Accent block" }));
-    } else if (layout === "editorial") {
-      canvas.add(new fabric.Rect({ left: width * .63, top: 0, width: width * .37, height, fill: accent, selectable: false, evented: false, dataRole: "accent", dataLabel: "Editorial column" }));
-    } else if (layout === "bold") {
-      canvas.add(new fabric.Rect({ left: -width * .1, top: height * .68, width: width * 1.2, height: height * .24, angle: -5, fill: accent, selectable: false, evented: false, dataRole: "accent", dataLabel: "Offer stripe" }));
-    } else if (layout === "community") {
-      canvas.add(new fabric.Circle({ left: width * .58, top: height * .58, radius: width * .28, fill: "rgba(255,255,255,.07)", stroke: accent, strokeWidth: 3, selectable: false, evented: false, dataRole: "accent", dataLabel: "Community ring" }));
-    } else if (layout === "clean") {
-      canvas.add(new fabric.Rect({ left: 0, top: 0, width: Math.max(16, width * .035), height, fill: accent, selectable: false, evented: false, dataRole: "accent", dataLabel: "Side rule" }));
-    } else if (layout === "luxury") {
-      canvas.add(new fabric.Rect({ left: width * .07, top: height * .07, width: width * .86, height: height * .86, fill: "transparent", stroke: accent, strokeWidth: 2, selectable: false, evented: false, dataRole: "accent", dataLabel: "Gold frame" }));
-    }
-
-    const margin = width * .085;
-    const badge = makeTextbox(cfg.badge || "PROBLEM → SOLUTION", { left: margin, top: height * .09, width: width * .58, fontSize: Math.max(12, width * .022), fill: accent, charSpacing: 80, dataRole: "badge", dataLabel: "Badge" });
-    const headline = makeTextbox("Your customer has a problem. Your business has the solution.", { left: margin, top: height * .24, width: width * .78, fontSize: Math.max(30, width * .065), fill: textColor, dataRole: "headline", dataLabel: "Headline" });
-    const body = makeTextbox("Explain how your service saves time, reduces stress and helps customers get a stronger result.", { left: margin, top: height * .58, width: width * .68, fontFamily: "DM Sans", fontWeight: 400, fontSize: Math.max(15, width * .027), lineHeight: 1.35, fill: textColor, opacity: .82, dataRole: "body", dataLabel: "Supporting text" });
-    const brand = makeTextbox((state.brand?.name || "YOUR BRAND").toUpperCase(), { left: margin, top: height * .88, width: width * .65, fontSize: Math.max(11, width * .02), fill: layout === "split" ? background : textColor, charSpacing: 60, dataRole: "brand", dataLabel: "Brand name" });
-    canvas.add(badge, headline, body, brand);
-    state.designer.historyLock = false;
-    canvas.renderAll();
-    resetHistory();
-    refreshLayers();
-  }
-
-  function addText(type) {
-    const canvas = state.designer.canvas;
-    const isHeading = type === "heading";
-    const object = makeTextbox(isHeading ? "New headline" : "Add supporting text here.", {
-      left: canvas.getWidth() * .15,
-      top: canvas.getHeight() * .35,
-      width: canvas.getWidth() * .65,
-      fontSize: isHeading ? 44 : 22,
-      fontWeight: isHeading ? 800 : 400,
-      fill: "#ffffff",
-      dataRole: type,
-      dataLabel: isHeading ? "Heading" : "Body text",
-    });
-    canvas.add(object).setActiveObject(object);
-    canvas.renderAll();
-  }
-
-  function addShape(type) {
-    const canvas = state.designer.canvas;
-    const common = { left: canvas.getWidth() * .35, top: canvas.getHeight() * .35, fill: state.brand?.accent_color || "#f3b63f", opacity: .95, dataRole: "shape", dataLabel: type === "circle" ? "Circle" : "Rectangle" };
-    const object = type === "circle" ? new fabric.Circle({ ...common, radius: 70 }) : new fabric.Rect({ ...common, width: 180, height: 100, rx: 8, ry: 8 });
-    canvas.add(object).setActiveObject(object);
-    canvas.renderAll();
-  }
-
-  function addUploadedImage(file) {
+  function handleImageUpload(file) {
     if (!file) return;
+    if (!file.type.startsWith("image/")) return showToast("Choose a PNG, JPG, or WebP image.");
     const reader = new FileReader();
-    reader.onload = () => fabric.Image.fromURL(reader.result, (image) => {
-      const canvas = state.designer.canvas;
-      image.set({ left: canvas.getWidth() * .2, top: canvas.getHeight() * .2, dataRole: "image", dataLabel: file.name });
-      image.scaleToWidth(Math.min(canvas.getWidth() * .55, image.width || 300));
-      canvas.add(image).setActiveObject(image);
-      canvas.renderAll();
-    }, { crossOrigin: "anonymous" });
+    reader.onload = () => {
+      setImage(reader.result);
+      showToast("Image uploaded.");
+    };
     reader.readAsDataURL(file);
   }
 
-  function selectedObject() {
-    return state.designer.canvas?.getActiveObject() || null;
+  function downloadDataUrl(url, filename) {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.append(link);
+    link.click();
+    link.remove();
   }
 
-  function updateObjectProperties() {
-    const object = selectedObject();
-    $("#noSelectionMessage").classList.toggle("hidden", Boolean(object));
-    $("#objectProperties").classList.toggle("hidden", !object);
-    if (!object) return refreshLayers();
-    const isText = ["textbox", "i-text", "text"].includes(object.type);
-    $("#objectText").disabled = !isText;
-    $("#fontFamily").disabled = !isText;
-    $("#fontSize").disabled = !isText;
-    $("#boldButton").disabled = !isText;
-    $("#alignLeftButton").disabled = !isText;
-    $("#alignCenterButton").disabled = !isText;
-    $("#alignRightButton").disabled = !isText;
-    $("#objectText").value = isText ? object.text || "" : "Not a text element";
-    $("#fontFamily").value = object.fontFamily || "Manrope";
-    $("#fontSize").value = Math.round(object.fontSize || 20);
-    $("#objectColor").value = normalizeColor(object.fill);
-    $("#objectOpacity").value = object.opacity ?? 1;
-    refreshLayers();
+  function syncDesignFromCurrent() {
+    const headline = $("#designHeadlineInput").value.trim() || state.service.headlines[0];
+    const subtext = $("#designSubtextInput").value.trim() || currentSettings().topic;
+    $("#canvasHeadline").textContent = headline;
+    $("#canvasSubtext").textContent = subtext;
+    $("#canvasServiceTag").textContent = state.service.name.toUpperCase();
+    $("#canvasKicker").textContent = currentSettings().goal.label.toUpperCase();
+    applyCanvasBackground();
   }
 
-  function normalizeColor(value) {
-    if (typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value)) return value;
-    return "#5b3df5";
+  function renderTemplates() {
+    $("#templatePicker").innerHTML = TEMPLATES.map(template => `<button class="template-thumb${template === state.template ? " selected" : ""}" data-template="${template}" title="${template}"></button>`).join("");
+    $$(".template-thumb").forEach(button => button.addEventListener("click", () => {
+      state.template = button.dataset.template;
+      renderTemplates();
+      updateCanvasClass();
+    }));
   }
 
-  function updateSelected(props) {
-    const object = selectedObject();
-    if (!object) return;
-    object.set(props);
-    object.setCoords();
-    state.designer.canvas.requestRenderAll();
-    pushHistory();
-    refreshLayers();
+  function updateCanvasClass() {
+    const canvas = $("#postCanvas");
+    canvas.className = `post-canvas size-${state.canvasSize} template-${state.template}`;
+    canvas.style.setProperty("--canvas-headline", $("#headlineColor").value);
+    canvas.style.setProperty("--canvas-accent", $("#accentColor").value);
   }
 
-  function refreshLayers() {
-    const canvas = state.designer.canvas;
-    if (!canvas) return;
-    const list = $("#layersList");
-    list.innerHTML = "";
-    [...canvas.getObjects()].reverse().forEach((object) => {
-      const row = document.createElement("div");
-      row.className = `layer-item${canvas.getActiveObject() === object ? " active" : ""}`;
-      row.innerHTML = `<span>${escapeHtml(object.dataLabel || object.dataRole || object.type)}</span><button title="Select">Select</button>`;
-      $("button", row).addEventListener("click", () => { canvas.setActiveObject(object); canvas.requestRenderAll(); updateObjectProperties(); });
-      list.append(row);
+  function selectCanvasSize(size) {
+    state.canvasSize = size;
+    $$("#sizePicker button").forEach(button => button.classList.toggle("selected", button.dataset.size === size));
+    updateCanvasClass();
+  }
+
+  function resetCanvasLayout() {
+    const positions = {
+      logo: { x: 0, y: 0 },
+      tag: { x: 0, y: 0 },
+      copy: { x: 0, y: 0 },
+      contact: { x: 0, y: 0 }
+    };
+    $$(".draggable", $("#postCanvas")).forEach(element => {
+      element.style.transform = "translate(0px, 0px)";
+      element.dataset.x = "0";
+      element.dataset.y = "0";
+    });
+    $("#extraElements").innerHTML = "";
+    showToast("Design layout reset.");
+  }
+
+  function initInteract() {
+    if (!window.interact) return;
+    interact(".draggable").draggable({
+      modifiers: [interact.modifiers.restrictRect({ restriction: "parent", endOnly: true })],
+      listeners: {
+        move(event) {
+          const target = event.target;
+          const x = (parseFloat(target.dataset.x) || 0) + event.dx;
+          const y = (parseFloat(target.dataset.y) || 0) + event.dy;
+          target.style.transform = `translate(${x}px, ${y}px)`;
+          target.dataset.x = String(x);
+          target.dataset.y = String(y);
+        }
+      }
+    });
+    interact(".resizable, .extra-element").resizable({
+      edges: { left: true, right: true, bottom: true, top: true },
+      modifiers: [interact.modifiers.restrictEdges({ outer: "parent" }), interact.modifiers.restrictSize({ min: { width: 80, height: 34 } })],
+      listeners: {
+        move(event) {
+          const target = event.target;
+          let x = parseFloat(target.dataset.x) || 0;
+          let y = parseFloat(target.dataset.y) || 0;
+          target.style.width = `${event.rect.width}px`;
+          target.style.height = `${event.rect.height}px`;
+          x += event.deltaRect.left;
+          y += event.deltaRect.top;
+          target.style.transform = `translate(${x}px, ${y}px)`;
+          target.dataset.x = String(x);
+          target.dataset.y = String(y);
+        }
+      }
     });
   }
 
-  function resetHistory() {
-    const canvas = state.designer.canvas;
-    state.designer.history = [JSON.stringify(canvas.toDatalessJSON(["dataRole", "dataLabel"]))];
-    state.designer.historyIndex = 0;
+  function addExtraElement(type) {
+    const id = `extra-${Date.now()}`;
+    const el = document.createElement("div");
+    el.id = id;
+    el.className = `extra-element ${type}`;
+    el.contentEditable = "true";
+    el.textContent = type === "badge" ? "CALL NOW" : "Double-click to edit";
+    el.style.left = type === "badge" ? "63%" : "12%";
+    el.style.top = type === "badge" ? "19%" : "68%";
+    el.dataset.x = "0";
+    el.dataset.y = "0";
+    $("#extraElements").append(el);
+    initInteract();
+    showToast(`${type === "badge" ? "Badge" : "Text"} added. Click the words to edit.`);
   }
 
-  function pushHistory() {
-    const designer = state.designer;
-    if (!designer.canvas || designer.historyLock) return;
-    clearTimeout(pushHistory.timer);
-    pushHistory.timer = setTimeout(() => {
-      const snapshot = JSON.stringify(designer.canvas.toDatalessJSON(["dataRole", "dataLabel"]));
-      if (designer.history[designer.historyIndex] === snapshot) return;
-      designer.history = designer.history.slice(0, designer.historyIndex + 1);
-      designer.history.push(snapshot);
-      if (designer.history.length > 40) designer.history.shift();
-      designer.historyIndex = designer.history.length - 1;
-    }, 80);
+  async function renderCanvas(scale = 2.5) {
+    return html2canvas($("#postCanvas"), { scale, useCORS: true, backgroundColor: null, logging: false });
   }
 
-  function loadHistory(index) {
-    const designer = state.designer;
-    const snapshot = designer.history[index];
-    if (!snapshot) return;
-    designer.historyLock = true;
-    designer.canvas.loadFromJSON(snapshot, () => {
-      designer.canvas.renderAll();
-      designer.historyIndex = index;
-      designer.historyLock = false;
-      refreshLayers();
-      updateObjectProperties();
-    });
-  }
-
-  function loadPostIntoDesigner(post) {
-    switchRoute("designer");
-    if (state.activeTemplate) applyTemplate(state.activeTemplate);
-    const canvas = state.designer.canvas;
-    const headline = canvas.getObjects().find((item) => item.dataRole === "headline");
-    const body = canvas.getObjects().find((item) => item.dataRole === "body");
-    if (headline) headline.set({ text: post.headline || "Your headline" });
-    if (body) body.set({ text: summarizeForDesign(post.body) });
-    canvas.requestRenderAll();
-    resetHistory();
-    showToast("Post loaded into the designer.");
-  }
-
-  function summarizeForDesign(text = "") {
-    const paragraphs = text.split(/\n+/).map((part) => part.trim()).filter(Boolean).filter((part) => !part.startsWith("#"));
-    const useful = paragraphs.find((part) => part.length > 45) || paragraphs[0] || "";
-    return useful.length > 170 ? `${useful.slice(0, 167).trim()}…` : useful;
-  }
-
-  async function saveDesign() {
-    if (!state.user || !state.designer.canvas) return;
-    const button = $("#saveDesignButton");
-    setButtonBusy(button, true, "Saving…");
-    setSaving(true);
-    const canvas = state.designer.canvas;
-    canvas.discardActiveObject().requestRenderAll();
+  async function downloadPost() {
+    setLoading(true, "Preparing high-resolution post", "Rendering the finished LIW design as a PNG.");
     try {
-      const previewUrl = canvas.toDataURL({ format: "png", multiplier: 1.6, quality: .95 });
-      const blob = await (await fetch(previewUrl)).blob();
-      const path = `${state.user.id}/designs/design-${Date.now()}.png`;
-      const { error: uploadError } = await db.storage.from("brand-assets").upload(path, blob, { contentType: "image/png", cacheControl: "3600", upsert: false });
-      if (uploadError) throw uploadError;
-      const { error } = await db.from("designs").insert({
-        user_id: state.user.id,
-        brand_id: state.brand?.id || null,
-        name: `${state.activeTemplate?.name || "Custom"} ${new Date().toLocaleDateString()}`,
-        canvas_size: state.designer.size,
-        template_slug: state.activeTemplate?.slug || null,
-        design_json: canvas.toDatalessJSON(["dataRole", "dataLabel"]),
-        preview_path: path,
-      });
-      if (error) throw error;
-      showToast("Design and preview saved.");
+      const canvas = await renderCanvas(3);
+      downloadDataUrl(canvas.toDataURL("image/png", 1), `liw-${state.service.id}-${state.canvasSize}-${Date.now()}.png`);
+      showToast("Finished post downloaded.");
     } catch (error) {
       console.error(error);
-      showToast(error.message || "Could not save the design.");
+      showToast("The design could not be exported. Try using an uploaded image or branded background.");
     } finally {
-      setSaving(false);
-      setButtonBusy(button, false);
+      setLoading(false);
     }
   }
 
-  function downloadDesign() {
-    const canvas = state.designer.canvas;
-    if (!canvas) return;
-    canvas.discardActiveObject().requestRenderAll();
-    const link = document.createElement("a");
-    link.download = `${(state.brand?.name || "postpilot").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${state.designer.size}-${Date.now()}.png`;
-    link.href = canvas.toDataURL({ format: "png", multiplier: 3, quality: 1 });
-    link.click();
-    showToast("High-resolution PNG downloaded.");
+  async function savePost() {
+    setLoading(true, "Saving LIW post", "Creating a lightweight preview for the browser library.");
+    try {
+      const canvas = await renderCanvas(1.2);
+      const preview = await compressCanvas(canvas, 620, 0.76);
+      state.saved.unshift({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        serviceId: state.service.id,
+        serviceName: state.service.name,
+        headline: $("#designHeadlineInput").value,
+        subtext: $("#designSubtextInput").value,
+        caption: $("#finalCaption").value,
+        template: state.template,
+        size: state.canvasSize,
+        preview,
+        createdAt: new Date().toISOString()
+      });
+      state.saved = state.saved.slice(0, 15);
+      persistSaved();
+      renderLibrary();
+      showToast("Post saved in this browser.");
+    } catch (error) {
+      console.error(error);
+      showToast("Could not save the post preview.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function compressCanvas(sourceCanvas, maxWidth, quality) {
+    return new Promise(resolve => {
+      const ratio = Math.min(1, maxWidth / sourceCanvas.width);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(sourceCanvas.width * ratio);
+      canvas.height = Math.round(sourceCanvas.height * ratio);
+      canvas.getContext("2d").drawImage(sourceCanvas, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    });
+  }
+
+  function renderLibrary() {
+    $("#savedBadge").textContent = state.saved.length;
+    const grid = $("#libraryGrid");
+    grid.innerHTML = state.saved.map(item => `
+      <article class="library-card" data-id="${item.id}">
+        <img src="${item.preview}" alt="${escapeHtml(item.serviceName)} post preview">
+        <div class="library-card-content">
+          <h3>${escapeHtml(item.headline || item.serviceName)}</h3>
+          <p>${escapeHtml(item.caption || "")}</p>
+          <div class="library-actions">
+            <button data-action="copy">Copy caption</button>
+            <button data-action="reopen">Reopen</button>
+            <button data-action="delete">Delete</button>
+          </div>
+        </div>
+      </article>
+    `).join("");
+    $$(".library-card", grid).forEach(card => {
+      const item = state.saved.find(saved => saved.id === card.dataset.id);
+      $$("button", card).forEach(button => button.addEventListener("click", () => handleLibraryAction(button.dataset.action, item)));
+    });
+  }
+
+  function handleLibraryAction(action, item) {
+    if (!item) return;
+    if (action === "copy") return copyText(item.caption);
+    if (action === "delete") {
+      state.saved = state.saved.filter(saved => saved.id !== item.id);
+      persistSaved();
+      renderLibrary();
+      return showToast("Saved post deleted.");
+    }
+    const service = SERVICES.find(entry => entry.id === item.serviceId) || SERVICES[0];
+    state.service = service;
+    state.template = item.template || "impact";
+    state.canvasSize = item.size || "square";
+    $("#designHeadlineInput").value = item.headline || service.headlines[0];
+    $("#designSubtextInput").value = item.subtext || service.defaultTopic;
+    $("#finalCaption").value = item.caption || "";
+    renderServices();
+    renderTemplates();
+    selectCanvasSize(state.canvasSize);
+    syncDesignFromCurrent();
+    switchView("create");
+    switchWorkspace("design");
+    showToast("Saved post reopened. The original background preview remains in the library card.");
   }
 
   function copyText(text) {
-    navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard.")).catch(() => showToast("Copy failed."));
+    navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard.")).catch(() => {
+      const area = document.createElement("textarea");
+      area.value = text;
+      document.body.append(area);
+      area.select();
+      document.execCommand("copy");
+      area.remove();
+      showToast("Copied to clipboard.");
+    });
+  }
+
+  function updateCampaignSummary() {
+    const s = currentSettings();
+    $("#campaignServiceName").textContent = state.service.name;
+    $("#campaignGoalName").textContent = s.goal.label;
+    $("#campaignPlatformName").textContent = s.platform.label;
+  }
+
+  function generateCampaign() {
+    const service = state.service;
+    const s = currentSettings();
+    const themes = [
+      { type: "Problem", title: `The real cost of ignoring ${service.name.toLowerCase()}`, body: `${service.problem}\n\n${s.cta}` },
+      { type: "Solution", title: `A better way to handle ${service.name.toLowerCase()}`, body: `${service.solution}\n\n${s.cta}` },
+      { type: "Benefits", title: `Three reasons to choose LIW`, body: `${service.benefits.map((benefit, index) => `${index + 1}. ${benefit}`).join("\n")}\n\n${s.cta}` },
+      { type: "Education", title: `What customers should know`, body: `${s.topic}\n\nKnowing the process before you begin can save time and reduce confusion.\n\n${s.cta}` },
+      { type: "Trust", title: `Local service. Clear communication.`, body: `LIW Worgs Inc. serves Brooklyn and the surrounding New York community with practical support and professional service.\n\n${s.cta}` },
+      { type: "FAQ", title: `Do you need help with ${service.name.toLowerCase()}?`, body: `Start with a conversation about your situation, goals, timing, and the result you need. We will explain the next step clearly.\n\n${s.cta}` },
+      { type: "Action", title: service.headlines[0], body: `${s.goal.hook}\n\n${s.topic}\n\n${s.goal.ending}\n\n${s.cta}` }
+    ];
+    state.campaign = themes.map((theme, index) => ({
+      day: index + 1,
+      ...theme,
+      caption: `${theme.body}\n\n${makeHashtags(service, s.platformId)}`
+    }));
+    renderCampaign();
+    showToast("Seven-day LIW campaign created.");
+  }
+
+  function renderCampaign() {
+    const grid = $("#campaignGrid");
+    grid.innerHTML = state.campaign.map(item => `
+      <article class="campaign-card">
+        <div class="campaign-card-top"><span class="campaign-day">DAY ${item.day}</span><h3>${escapeHtml(item.title)}</h3><span>${escapeHtml(item.type)} post</span></div>
+        <div class="campaign-card-body"><p>${escapeHtml(item.caption)}</p><div class="campaign-card-actions"><button data-copy="${item.day}">Copy</button><button data-design="${item.day}">Design</button></div></div>
+      </article>
+    `).join("");
+    $$('[data-copy]', grid).forEach(button => button.addEventListener("click", () => copyText(state.campaign[Number(button.dataset.copy) - 1].caption)));
+    $$('[data-design]', grid).forEach(button => button.addEventListener("click", () => {
+      const item = state.campaign[Number(button.dataset.design) - 1];
+      $("#finalCaption").value = item.caption;
+      $("#designHeadlineInput").value = item.title;
+      $("#designSubtextInput").value = item.body.split("\n\n")[0];
+      syncDesignFromCurrent();
+      switchView("create");
+      switchWorkspace("design");
+    }));
   }
 
   function bindEvents() {
-    $$("[data-route]").forEach((element) => element.addEventListener("click", (event) => { event.preventDefault(); switchRoute(element.dataset.route); }));
-    $("#mobileMenuButton").addEventListener("click", () => $("#sidebar").classList.toggle("open"));
-    $("#authForm").addEventListener("submit", handleAuthSubmit);
-    $("#toggleAuthMode").addEventListener("click", toggleAuthMode);
-    $("#accountButton").addEventListener("click", () => state.user ? (confirm("Sign out of PostPilot?") && signOut()) : $("#authModal").classList.add("active"));
+    $$(".nav-button").forEach(button => button.addEventListener("click", () => switchView(button.dataset.view)));
+    $("#mobileMenu").addEventListener("click", () => $(".top-nav").classList.toggle("open"));
+    $$(".workspace-tab").forEach(button => button.addEventListener("click", () => switchWorkspace(button.dataset.workspace)));
+    $$('[data-next-workspace]').forEach(button => button.addEventListener("click", () => switchWorkspace(button.dataset.nextWorkspace)));
 
-    $$(".platform").forEach((button) => button.addEventListener("click", () => {
-      const platform = button.dataset.platform;
-      button.classList.toggle("selected");
-      button.classList.contains("selected") ? state.selectedPlatforms.add(platform) : state.selectedPlatforms.delete(platform);
+    $("#generatePostButton").addEventListener("click", generatePostPackage);
+    $("#regenerateCopyButton").addEventListener("click", generatePostPackage);
+    $("#finalCaption").addEventListener("input", updateCaptionCount);
+    $("#copyCaptionButton").addEventListener("click", () => copyText($("#finalCaption").value));
+
+    $("#campaignGoal").addEventListener("change", () => { updateCampaignSummary(); updateImagePrompt(); });
+    $("#platform").addEventListener("change", () => { updateCampaignSummary(); updateImagePrompt(); selectCanvasSize(PLATFORMS[$("#platform").value].size); });
+    $("#tone").addEventListener("change", updateImagePrompt);
+    $("#postTopic").addEventListener("input", () => { $("#designSubtextInput").value = $("#postTopic").value; });
+
+    $$("#stylePicker button").forEach(button => button.addEventListener("click", () => {
+      state.imageStyle = button.dataset.style;
+      $$("#stylePicker button").forEach(item => item.classList.toggle("selected", item === button));
+      updateImagePrompt();
     }));
-    $("#brandVoice").addEventListener("change", (event) => $("#tone").value = event.target.value);
-    $("#generateButton").addEventListener("click", generatePosts);
-    $("#saveAllPostsButton").addEventListener("click", saveAllGeneratedPosts);
-    $("#refreshLibraryButton").addEventListener("click", loadLibrary);
-    $("#scheduleButton").addEventListener("click", schedulePost);
-    $("#saveBrandButton").addEventListener("click", saveBrand);
-    $("#logoUpload").addEventListener("change", (event) => uploadLogo(event.target.files?.[0]));
+    $("#generateImageButton").addEventListener("click", generateAiImage);
+    $("#imageUpload").addEventListener("change", event => handleImageUpload(event.target.files[0]));
+    $("#useAbstractButton").addEventListener("click", () => useAbstractBackground());
+    $("#downloadRawImageButton").addEventListener("click", () => state.imageUrl && downloadDataUrl(state.imageUrl, `liw-${state.service.id}-image.png`));
 
-    $("#addHeadingButton").addEventListener("click", () => addText("heading"));
-    $("#addBodyButton").addEventListener("click", () => addText("body"));
-    $("#addRectangleButton").addEventListener("click", () => addShape("rectangle"));
-    $("#addCircleButton").addEventListener("click", () => addShape("circle"));
-    $("#designerImageUpload").addEventListener("change", (event) => addUploadedImage(event.target.files?.[0]));
-    $$("#canvasSizePicker button").forEach((button) => button.addEventListener("click", () => setCanvasSize(button.dataset.size)));
-    $("#saveDesignButton").addEventListener("click", saveDesign);
-    $("#downloadDesignButton").addEventListener("click", downloadDesign);
-    $("#undoButton").addEventListener("click", () => loadHistory(state.designer.historyIndex - 1));
-    $("#redoButton").addEventListener("click", () => loadHistory(state.designer.historyIndex + 1));
-    $("#bringForwardButton").addEventListener("click", () => { const object = selectedObject(); if (object) { state.designer.canvas.bringForward(object); state.designer.canvas.requestRenderAll(); pushHistory(); refreshLayers(); } });
-    $("#sendBackwardButton").addEventListener("click", () => { const object = selectedObject(); if (object) { state.designer.canvas.sendBackwards(object); state.designer.canvas.requestRenderAll(); pushHistory(); refreshLayers(); } });
-    $("#deleteObjectButton").addEventListener("click", () => { const object = selectedObject(); if (object) { state.designer.canvas.remove(object); state.designer.canvas.discardActiveObject(); state.designer.canvas.requestRenderAll(); } });
+    $("#designHeadlineInput").addEventListener("input", syncDesignFromCurrent);
+    $("#designSubtextInput").addEventListener("input", syncDesignFromCurrent);
+    $("#headlineColor").addEventListener("input", updateCanvasClass);
+    $("#accentColor").addEventListener("input", () => { updateCanvasClass(); if (state.imageUrl.startsWith("data:image/svg")) useAbstractBackground(false); });
+    $("#imageZoom").addEventListener("input", applyCanvasBackground);
+    $("#imagePosition").addEventListener("input", applyCanvasBackground);
+    $$("#sizePicker button").forEach(button => button.addEventListener("click", () => selectCanvasSize(button.dataset.size)));
+    $("#addBadgeButton").addEventListener("click", () => addExtraElement("badge"));
+    $("#addTextButton").addEventListener("click", () => addExtraElement("text"));
+    $("#resetLayoutButton").addEventListener("click", resetCanvasLayout);
+    $("#downloadPostButton").addEventListener("click", downloadPost);
+    $("#savePostButton").addEventListener("click", savePost);
 
-    $("#objectText").addEventListener("input", (event) => updateSelected({ text: event.target.value }));
-    $("#fontFamily").addEventListener("change", (event) => updateSelected({ fontFamily: event.target.value }));
-    $("#fontSize").addEventListener("input", (event) => updateSelected({ fontSize: Number(event.target.value) }));
-    $("#objectColor").addEventListener("input", (event) => updateSelected({ fill: event.target.value }));
-    $("#objectOpacity").addEventListener("input", (event) => updateSelected({ opacity: Number(event.target.value) }));
-    $("#boldButton").addEventListener("click", () => { const object = selectedObject(); if (object) updateSelected({ fontWeight: object.fontWeight === "bold" || Number(object.fontWeight) >= 700 ? 400 : 800 }); });
-    $("#alignLeftButton").addEventListener("click", () => updateSelected({ textAlign: "left" }));
-    $("#alignCenterButton").addEventListener("click", () => updateSelected({ textAlign: "center" }));
-    $("#alignRightButton").addEventListener("click", () => updateSelected({ textAlign: "right" }));
-
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    $("#scheduleDate").min = new Date().toISOString().split("T")[0];
-    $("#scheduleDate").value = tomorrow.toISOString().split("T")[0];
+    $("#generateCampaignButton").addEventListener("click", generateCampaign);
+    $("#clearLibraryButton").addEventListener("click", () => {
+      state.saved = [];
+      persistSaved();
+      renderLibrary();
+      showToast("Saved-post library cleared.");
+    });
   }
 
-  async function start() {
+  function init() {
+    $("#postTopic").value = state.service.defaultTopic;
+    renderServices();
+    renderTemplates();
+    renderLibrary();
+    persistSaved();
+    generatePostPackage();
+    selectCanvasSize(PLATFORMS[$("#platform").value].size);
     bindEvents();
-    switchRoute(location.hash.replace("#", "") || "generator");
-    await initializeAuth();
+    initInteract();
+    updateCampaignSummary();
+    lucide.createIcons();
   }
 
-  start().catch((error) => {
-    console.error(error);
-    showToast("PostPilot could not start. Check the browser console.");
-  });
+  init();
 })();

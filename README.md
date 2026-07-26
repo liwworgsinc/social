@@ -1,63 +1,119 @@
-# PostPilot Studio
+# LIW Worgs Social Advertising Studio
 
-PostPilot Studio is a static, mobile-friendly social content web app backed by Supabase. It analyzes public website content, creates problem–solution posts, stores brand settings and posts, provides a drag-and-drop Fabric.js design canvas, saves design previews to private Storage, and manages a content queue.
+A private-use, no-login web app created specifically for **LIW Worgs Inc.** to advertise its services.
 
-## Live architecture
+## What changed
 
-- **Frontend:** HTML, CSS, JavaScript
-- **Designer:** Fabric.js
-- **Backend:** Supabase Postgres, Auth, Storage and Edge Functions
-- **Deployment target:** GitHub Pages
-- **Project ref:** `dnpdhjhpnguzhmnimklm`
+This is no longer a generic content platform. It opens directly into the LIW advertising workflow and does not include signup, login, customer accounts, or brand onboarding.
 
-## Features
+## LIW services included
 
-- Email/password authentication
-- User-owned brand kits with RLS
-- Public website reading through an authenticated Edge Function
-- Problem–Solution, PAS, AIDA, Before–After and Educational copy frameworks
-- Instagram, Facebook, LinkedIn and X formatting
-- Editable generated posts with hashtags
-- Six database-driven design templates
-- Drag, resize, rotate and layer text, images and shapes
-- Square, portrait, landscape and story canvases
-- High-resolution PNG downloads
-- Private Supabase Storage for logos and previews
-- Saved post library and scheduling queue
+- Business advertising
+- Website and digital solutions
+- Print and graphic design
+- Real estate sales and rentals
+- Property management
+- Income-tax services
+- Credit solutions
+- Business funding guidance
+- Eyeglasses repair / Just Eyes
 
-## Repository files
+## Main features
 
-- `index.html` — application UI
-- `styles.css` — responsive interface
-- `config.js` — public Supabase URL and publishable key
-- `app.js` — auth, database, generator and designer logic
-- `supabase/migrations/...sql` — database and RLS foundation
-- `supabase/functions/generate-posts/index.ts` — website analysis and post generation
+- Select an LIW service
+- Choose the campaign goal, platform, and tone
+- Generate three different caption options
+- Edit and copy the final caption
+- Automatically create a service-specific AI image prompt
+- Generate a new advertising image through Supabase + OpenAI
+- Upload a photo instead
+- Create an original LIW branded graphic background without an AI API
+- Eight professional design templates
+- Square, portrait, story, and landscape sizes
+- Drag and resize design elements
+- Add editable badges and text
+- Download high-resolution PNG posts
+- Generate a seven-day campaign
+- Save up to 15 finished posts in browser storage
 
-## Required Supabase dashboard setting
+## Files
 
-After GitHub Pages is enabled, add this URL to **Authentication → URL Configuration → Redirect URLs**:
+```text
+index.html
+styles.css
+app.js
+config.js
+.nojekyll
+README.md
+supabase/functions/liw-generate-image/index.ts
+```
+
+## Upload to GitHub Pages
+
+Upload the files in this folder to the root of:
+
+```text
+https://github.com/liwworgsinc/social/
+```
+
+Then open the repository settings and enable GitHub Pages from the `main` branch and root folder.
+
+The expected website address is:
 
 ```text
 https://liwworgsinc.github.io/social/
 ```
 
-Set the Site URL to the same address if this is the production domain.
+## AI image generation setup
 
-## Security
+The `liw-generate-image` Supabase Edge Function has already been deployed to project:
 
-The browser uses a Supabase publishable key, which is designed for public clients. Every user table has Row Level Security. Do not add a secret or service-role key to this repository.
-
-The `brand-assets` bucket is private. Files must be stored inside a folder named with the authenticated user's UUID.
-
-## Current publishing scope
-
-The content queue stores approved schedule records, but it does not yet publish to Meta, LinkedIn or X. Automatic publishing requires OAuth approval and platform-specific tokens stored only on the server.
-
-## Local preview
-
-```bash
-python -m http.server 8080
+```text
+dnpdhjhpnguzhmnimklm
 ```
 
-Open `http://localhost:8080`.
+The function keeps the OpenAI API key on the server. The key is never placed in `config.js` or browser JavaScript.
+
+To activate the **Generate AI image** button:
+
+1. Open the Supabase project.
+2. Go to **Edge Functions → Secrets**.
+3. Add a secret named:
+
+```text
+OPENAI_API_KEY
+```
+
+4. Paste a valid OpenAI API key as the value.
+5. Reload the web app.
+
+The function uses the current OpenAI Image API with the `gpt-image-2` model.
+
+Without that secret, the rest of the application still works. When AI generation is unavailable, the app automatically uses an original LIW branded graphic background or an uploaded photo.
+
+## Security note
+
+The user requested no login. The image endpoint therefore uses all of the following lightweight controls:
+
+- A studio request key
+- Approved website origins
+- A daily per-client generation limit
+- A server-side OpenAI API key
+
+Do not share the studio URL broadly. A login-free public website cannot provide the same level of access control as real authentication.
+
+## Local testing
+
+Run a local server from this folder:
+
+```bash
+python -m http.server 8765
+```
+
+Open:
+
+```text
+http://localhost:8765
+```
+
+The deployed image function currently permits local testing from port `8765`.
